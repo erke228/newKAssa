@@ -100,7 +100,7 @@ body::after {
   align-items: center;
   justify-content: space-between;
   padding: 16px 20px;
-  padding-top: calc(16px + env(safe-area-inset-top, 0px));
+  padding-top: calc(40px + env(safe-area-inset-top, 0px));
   background: rgba(10, 14, 20, 0.85);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid rgba(0, 255, 255, 0.15);
@@ -198,6 +198,7 @@ body::after {
   display: flex;
   justify-content: space-around;
   padding: 8px 0;
+  padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
   z-index: 99;
 }
 

@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.webkit.*
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.enableEdgeToEdge
 import androidx.lifecycle.lifecycleScope
 import com.example.myapplication.utils.NetworkObserver
 import kotlinx.coroutines.flow.collectLatest
@@ -17,6 +18,7 @@ class MainActivity : ComponentActivity() {
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         
         updateManager = UpdateManager(this)
