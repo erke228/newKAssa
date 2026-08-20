@@ -614,7 +614,10 @@
           }
 
           if (totalAmt > 0 && txItems.length > 0) {
-            const finalItems = [...txItems, { title: `ОПЛАТА: ${methodLabel}`, price: 0, cost_price: 0 }];
+            const finalItems = [...txItems];
+            if (finalItems.length > 0) {
+              finalItems[0]._payment_method = methodLabel;
+            }
             
             await supabase.from('transactions').insert({
               id: Date.now(),
@@ -664,8 +667,7 @@
               total_cost: extrasCost,
               timestamp: new Date().toISOString(),
               items: [
-                { title, price: amount, cost_price: 0 },
-                { title: `ОПЛАТА: ${methodLabel}`, price: 0, cost_price: 0 }
+                { title, price: amount, cost_price: 0, _payment_method: methodLabel }
               ]
             });
           }
@@ -1534,11 +1536,16 @@
                                   </div>
                                 </div>
                               ))}
-                              {(tx.items || []).filter(item => item.title.startsWith('ОПЛАТА:')).map((item, idx) => (
-                                <div key={'pay_'+idx} style={{ marginTop: '8px', fontSize: '0.75rem', color: 'var(--neon-purple)', fontWeight: 800, textTransform: 'uppercase' }}>
-                                  {item.title}
-                                </div>
-                              ))}
+                              {(() => {
+                                const oldPayItem = (tx.items || []).find(item => item.title.startsWith('ОПЛАТА:'));
+                                const newPayMethod = tx.items && tx.items.length > 0 ? tx.items[0]._payment_method : null;
+                                const payText = oldPayItem ? oldPayItem.title : (newPayMethod ? `ОПЛАТА: ${newPayMethod}` : null);
+                                return payText ? (
+                                  <div style={{ marginTop: '8px', fontSize: '0.75rem', color: 'var(--neon-purple)', fontWeight: 800, textTransform: 'uppercase' }}>
+                                    {payText}
+                                  </div>
+                                ) : null;
+                              })()}
                             </div>
                           </div>
                         ))
@@ -2107,11 +2114,16 @@
                         {(tx.items || []).filter(item => !item.title.startsWith('ОПЛАТА:')).map((item, i) => (
                           <div key={i} style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', paddingLeft: '8px' }}>• {item.title}: {item.price} ₸</div>
                         ))}
-                        {(tx.items || []).filter(item => item.title.startsWith('ОПЛАТА:')).map((item, i) => (
-                          <div key={'pay_'+i} style={{ fontSize: '0.75rem', color: 'var(--neon-purple)', fontWeight: 800, marginTop: '4px', textTransform: 'uppercase' }}>
-                            {item.title}
-                          </div>
-                        ))}
+                        {(() => {
+                          const oldPayItem = (tx.items || []).find(item => item.title.startsWith('ОПЛАТА:'));
+                          const newPayMethod = tx.items && tx.items.length > 0 ? tx.items[0]._payment_method : null;
+                          const payText = oldPayItem ? oldPayItem.title : (newPayMethod ? `ОПЛАТА: ${newPayMethod}` : null);
+                          return payText ? (
+                            <div style={{ fontSize: '0.75rem', color: 'var(--neon-purple)', fontWeight: 800, marginTop: '4px', textTransform: 'uppercase' }}>
+                              {payText}
+                            </div>
+                          ) : null;
+                        })()}
                       </div>
                     ))}
                   </div>
