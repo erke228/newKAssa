@@ -1,0 +1,2175 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>VITSA PS CLUB - Касса и Консоли</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./style.css" />
+
+    <!-- React 18 UMD & Babel Standalone & Supabase JS -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+      const { useState, useEffect } = React;
+
+      // Supabase Client
+      const SUPABASE_URL = 'https://htkoyibefvqvaisbolga.supabase.co';
+      const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh0a295aWJlZnZxdmFpc2JvbGdhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU4NzQzNjMsImV4cCI6MjEwMTQ1MDM2M30._ETmzJgURtwBpv5anL760wURMpTt_oPSDeR49mE67-Q';
+      const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+      // SVG Icon Component
+      function Icon({ name, size = 20, color = 'currentColor', className = '' }) {
+        const props = {
+          width: size,
+          height: size,
+          stroke: color,
+          strokeWidth: 2,
+          strokeLinecap: 'round',
+          strokeLinejoin: 'round',
+          fill: 'none',
+          className
+        };
+
+        switch (name) {
+          case 'monitor':
+            return (
+              <svg {...props} viewBox="0 0 24 24">
+                <rect x="2" y="3" width="20" height="14" rx="2" />
+                <line x1="8" y1="21" x2="16" y2="21" />
+                <line x1="12" y1="17" x2="12" y2="21" />
+              </svg>
+            );
+          case 'refresh':
+            return (
+              <svg {...props} viewBox="0 0 24 24">
+                <path d="M21.5 2v6h-6" />
+                <path d="M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
+              </svg>
+            );
+          case 'gamepad':
+            return (
+              <svg {...props} viewBox="0 0 24 24">
+                <line x1="6" y1="12" x2="10" y2="12" />
+                <line x1="8" y1="10" x2="8" y2="14" />
+                <circle cx="15" cy="13" r="1" fill={color} />
+                <circle cx="18" cy="11" r="1" fill={color} />
+                <path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59c-.84 7.56 1.343 11.41 3.298 11.41 1.955 0 2.68-1.5 3.5-3h5a3.68 3.68 0 0 0 3.5 3c1.955 0 4.138-3.85 3.298-11.41A4 4 0 0 0 17.32 5z" />
+              </svg>
+            );
+          case 'coffee':
+            return (
+              <svg {...props} viewBox="0 0 24 24">
+                <path d="M17 8h1a4 4 0 1 1 0 8h-1" />
+                <path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z" />
+                <line x1="6" y1="2" x2="6" y2="4" />
+                <line x1="10" y1="2" x2="10" y2="4" />
+                <line x1="14" y1="2" x2="14" y2="4" />
+              </svg>
+            );
+          case 'cart':
+            return (
+              <svg {...props} viewBox="0 0 24 24">
+                <circle cx="8" cy="21" r="1" />
+                <circle cx="19" cy="21" r="1" />
+                <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
+              </svg>
+            );
+          case 'stats':
+            return (
+              <svg {...props} viewBox="0 0 24 24">
+                <line x1="12" y1="20" x2="12" y2="10" />
+                <line x1="18" y1="20" x2="18" y2="4" />
+                <line x1="6" y1="20" x2="6" y2="16" />
+              </svg>
+            );
+          case 'trash':
+            return (
+              <svg {...props} viewBox="0 0 24 24">
+                <path d="M3 6h18" />
+                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+              </svg>
+            );
+          case 'search':
+            return (
+              <svg {...props} viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+            );
+          case 'plus':
+            return (
+              <svg {...props} viewBox="0 0 24 24">
+                <line x1="12" y1="5" x2="12" y2="19" />
+                <line x1="5" y1="12" x2="19" y2="12" />
+              </svg>
+            );
+          case 'close':
+            return (
+              <svg {...props} viewBox="0 0 24 24">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            );
+          case 'lock':
+            return (
+              <svg {...props} viewBox="0 0 24 24">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
+            );
+          case 'receipt':
+            return (
+              <svg {...props} viewBox="0 0 24 24">
+                <path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1-2-1Z" />
+                <line x1="8" y1="6" x2="16" y2="6" />
+                <line x1="8" y1="10" x2="16" y2="10" />
+                <line x1="8" y1="14" x2="12" y2="14" />
+              </svg>
+            );
+          case 'trending':
+            return (
+              <svg {...props} viewBox="0 0 24 24">
+                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18" />
+                <polyline points="17 6 23 6 23 12" />
+              </svg>
+            );
+          case 'history':
+            return (
+              <svg {...props} viewBox="0 0 24 24">
+                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                <path d="M3 3v5h5" />
+                <path d="M12 7v5l4 2" />
+              </svg>
+            );
+          case 'download':
+            return (
+              <svg {...props} viewBox="0 0 24 24">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+            );
+          case 'calendar':
+            return (
+              <svg {...props} viewBox="0 0 24 24">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                <line x1="16" y1="2" x2="16" y2="6" />
+                <line x1="8" y1="2" x2="8" y2="6" />
+                <line x1="3" y1="10" x2="21" y2="10" />
+              </svg>
+            );
+          case 'pie':
+            return (
+              <svg {...props} viewBox="0 0 24 24">
+                <path d="M21.21 15.89A10 10 0 1 1 8 2.83" />
+                <path d="M22 12A10 10 0 0 0 12 2v10z" />
+              </svg>
+            );
+          case 'dollar':
+            return (
+              <svg {...props} viewBox="0 0 24 24">
+                <line x1="12" y1="1" x2="12" y2="23" />
+                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+              </svg>
+            );
+          case 'clock':
+            return (
+              <svg {...props} viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
+            );
+          case 'bar-chart':
+            return (
+              <svg {...props} viewBox="0 0 24 24">
+                <line x1="18" y1="20" x2="18" y2="10" />
+                <line x1="12" y1="20" x2="12" y2="4" />
+                <line x1="6" y1="20" x2="6" y2="14" />
+              </svg>
+            );
+          case 'tv':
+            return (
+              <svg {...props} viewBox="0 0 24 24">
+                <rect x="2" y="7" width="20" height="13" rx="2" ry="2" />
+                <polyline points="17 2 12 7 7 2" />
+              </svg>
+            );
+          case 'smoke':
+            return (
+              <svg {...props} viewBox="0 0 24 24">
+                <path d="M12 21v-4M8 21v-3M16 21v-3" />
+                <path d="M12 17a4 4 0 0 0-4-4h8a4 4 0 0 0-4-4V5" />
+                <circle cx="12" cy="5" r="2" />
+                <path d="M14 5h3v2" />
+              </svg>
+            );
+          default:
+            return null;
+        }
+      }
+
+      // Translations Dictionary
+      const dict = {
+        ru: {
+          consoles: 'Консоли', bar: 'Бар', cart: 'Корзина', stats: 'Касса',
+          free: 'Свободно', busy: 'Занято', booked: 'Бронь', remaining: 'Осталось',
+          cost: 'Цена', tap_to_start: 'Нажмите для начала', select_session: 'Выберите сессию или пакет:',
+          packets: 'ПАКЕТЫ', book: 'Забронировать', client_name: 'Имя клиента',
+          confirm_booking: 'Подтвердить бронь', clear_booking: 'Снять бронь', close: 'Закрыть',
+          finish: 'Завершить', add_to_cart: 'В корзину', direct_sale: 'Прямая продажа',
+          add_to_console: 'Добавить к счету:', cart_empty: 'Корзина пуста', total: 'ИТОГО',
+          pay_kaspi: 'ОПЛАТИТЬ КАСПИ QR', payment_qr: 'ОПЛАТА ПО QR', scan_and_pay: 'Сканируйте и платите',
+          i_paid: 'Я ОПЛАТИЛ(А)', total_revenue: 'ОБЩАЯ ВЫРУЧКА', enter_amount: 'Введите сумму в приложении Kaspi',
+          reserved_for: 'Забронировано на:', session: 'Сессия', started: 'Начало', packet_price: 'Цена пакета',
+          until_stop: 'ДО УПОРА', by_rate: 'По тарифу', confirm: 'Подтвердить', cancel: 'Отмена',
+          common: 'Общий', vip: 'ВИП', bar_and_snacks: 'БАР И СНЕКИ', search_placeholder: 'Поиск товаров...',
+          all: 'ВСЕ', in_stock: 'В наличии', no_stock: 'НЕТ', new_product: 'Новый товар',
+          product_name: 'Название', category: 'Категория', price: 'Цена', cost_price: 'Закуп',
+          stock_count: 'Кол-во на складе', add: 'Добавить', close_shift: 'ЗАКРЫТЬ СМЕНУ',
+          journal: 'ЖУРНАЛ', charts: 'АНАЛИТИКА', reports: 'ОТЧЕТЫ', enter_admin_password: 'Введите пароль администратора:',
+          password: 'Пароль', wrong_password: 'Неверный пароль', revenue: 'Выручка', peak_hours: 'Пиковые часы',
+          popular_consoles: 'Популярность консолей', days: 'Дни', weeks: 'Недели', months: 'Месяцы',
+          no_data: 'Данных пока нет', report_details: 'Детали отчета', shift_total: 'Итого за смену', no_records: 'Нет записей',
+          analytics: 'АНАЛИТИКА', shift: 'Смена', today: 'Сегодня', week: 'Неделя', month: 'Месяц', all_time: 'Всё время',
+          revenue_chart: 'Выручка по дням', top_bar_items: 'Топ продаж бара', peak_hours_chart: 'Пиковые часы',
+          console_revenue: 'Доход по консолям', total_transactions: 'Транзакций', avg_check: 'Средний чек',
+          profit: 'Прибыль', costs: 'Себестоимость', download_csv: 'Скачать CSV', download_report: 'Скачать отчёт',
+          bar_sales: 'Продажи бара', console_sales: 'Продажи консолей', items_sold: 'Продано шт.',
+          no_analytics_data: 'Нет данных за выбранный период', report_downloaded: 'Отчёт скачан!',
+          common_consoles: 'Общие', vip_consoles: 'ВИП', hourly_revenue: 'Доход по часам',
+          turn_on_kassa: 'ВКЛЮЧИТЬ КАССУ', turn_off_kassa: 'ВЫКЛЮЧИТЬ КАССУ',
+          kassa_off: 'Касса выключена', enter_your_password: 'Введите ваш пароль:',
+          operator: 'Оператор', kassa_opened_by: 'Кассу открыл', kassa_closed_by: 'Кассу закрыл',
+          rent: 'Аренда', ps_rental: 'Аренда PS', joystick_rental: 'Аренда Джойстика',
+          per_day: '/ сутки', per_pcs: '/ шт', days_count: 'Количество дней', pcs_count: 'Количество джойстиков',
+          quick_bundles: 'Готовые комплекты', rental_sales: 'Продажи аренды',
+          hookah: 'Кальян', hookah_menu: 'Меню кальяна', hookah_weak: 'Слабая', hookah_medium: 'Средняя', hookah_strong: 'Сильная', hookah_coal: 'Замена угля', discount: 'Скидка',
+          discount_type_amount: 'Сумма ₸', discount_type_percent: 'Процент %', custom_discount: 'Своя скидка в ₸', subtotal: 'Подытог', no_discount: 'Без скидки',
+          own_food: 'Вход со своей едой', own_food_desc: 'Сбор за свои напитки/еду', add_own_food: 'Вход со своей едой (+1 000 ₸)'
+        },
+        kk: {
+          consoles: 'Консольдар', bar: 'Бар', cart: 'Себет', stats: 'Касса',
+          free: 'Бос', busy: 'Бос емес', booked: 'Брондалған', remaining: 'Қалды',
+          cost: 'Құны', tap_to_start: 'Бастау үшін басыңыз', select_session: 'Сессияны немесе пакетті таңдаңыз:',
+          packets: 'ПАКЕТТЕР', book: 'Брондау', client_name: 'Клиент есімі',
+          confirm_booking: 'Брондауды растау', clear_booking: 'Брондауды алып тастау', close: 'Жабу',
+          finish: 'Аяқтау', add_to_cart: 'Себетке', direct_sale: 'Тікелей сату',
+          add_to_console: 'Шотқа қосу:', cart_empty: 'Себет бос', total: 'ЖИЫНЫ',
+          pay_kaspi: 'KASPI QR-МЕН ТӨЛЕУ', payment_qr: 'QR-МЕН ТӨЛЕУ', scan_and_pay: 'Сканерлеп, төлеңіз',
+          i_paid: 'МЕН ТӨЛЕДІМ', total_revenue: 'ЖАЛПЫ ТҮСІМ', enter_amount: 'Kaspi қосымшасында соманы енгізіңіз',
+          reserved_for: 'Келесі адамға брондалған:', session: 'Сессия', started: 'Басталды', packet_price: 'Пакет құны',
+          until_stop: 'ТОҚТАТҚАНША', by_rate: 'Тариф бойынша', confirm: 'Растау', cancel: 'Бас тарту',
+          common: 'Жалпы', vip: 'ВИП', bar_and_snacks: 'БАР ЖӘНЕ СНЕКТЕР', search_placeholder: 'Тауарларды іздеу...',
+          all: 'БАРЛЫҒЫ', in_stock: 'Қалды', no_stock: 'ЖОҚ', new_product: 'Жаңа тауар',
+          product_name: 'Атауы', category: 'Санат', price: 'Бағасы', cost_price: 'Закуп',
+          stock_count: 'Саны', add: 'Қосу', close_shift: 'АУЫСЫМДЫ ЖАБУ',
+          journal: 'ЖУРНАЛ', charts: 'АНАЛИТИКА', reports: 'ЕСЕПТЕР', enter_admin_password: 'Әкімші құпия сөзін енгізіңіз:',
+          password: 'Құпия сөз', wrong_password: 'Қате құпия сөз', revenue: 'Табыс', peak_hours: 'Ең көп келетін уақыт',
+          popular_consoles: 'Консольдер танымалдылығы', days: 'Күндер', weeks: 'Апталар', months: 'Айлар',
+          no_data: 'Әзірге деректер жоқ', report_details: 'Есеп мәліметтері', shift_total: 'Ауысым қорытындысы', no_records: 'Жазбалар жоқ',
+          analytics: 'АНАЛИТИКА', shift: 'Ауысым', today: 'Бүгін', week: 'Апта', month: 'Ай', all_time: 'Барлық уақыт',
+          revenue_chart: 'Күндер бойынша табыс', top_bar_items: 'Бар сатылымы топ', peak_hours_chart: 'Ең көп келетін уақыт',
+          console_revenue: 'Консольдер бойынша табыс', total_transactions: 'Транзакциялар', avg_check: 'Орташа чек',
+          profit: 'Пайда', costs: 'Өзіндік құн', download_csv: 'CSV жүктеу', download_report: 'Есепті жүктеу',
+          bar_sales: 'Бар сатылымы', console_sales: 'Консоль сатылымы', items_sold: 'Сатылды дана',
+          no_analytics_data: 'Таңдалған кезеңде деректер жоқ', report_downloaded: 'Есеп жүктелді!',
+          common_consoles: 'Жалпы', vip_consoles: 'ВИП', hourly_revenue: 'Сағат бойынша табыс',
+          turn_on_kassa: 'КАССАНЫ ҚОСУ', turn_off_kassa: 'КАССАНЫ ӨШІРУ',
+          kassa_off: 'Касса өшірілген', enter_your_password: 'Құпия сөзіңізді енгізіңіз:',
+          operator: 'Оператор', kassa_opened_by: 'Кассаны ашқан', kassa_closed_by: 'Кассаны жапқан',
+          rent: 'Жалға алу', ps_rental: 'PS жалға алу', joystick_rental: 'Джойстик жалға алу',
+          per_day: '/ тәулік', per_pcs: '/ дана', days_count: 'Күндер саны', pcs_count: 'Джойстиктер саны',
+          quick_bundles: 'Дайын жиынтықтар', rental_sales: 'Жалға алу сатылымы',
+          hookah: 'Қорқор', hookah_menu: 'Қорқор мәзірі', hookah_weak: 'Жеңіл', hookah_medium: 'Орташа', hookah_strong: 'Қатты', hookah_coal: 'Көмір ауыстыру', discount: 'Жеңілдік',
+          discount_type_amount: 'Сомасы ₸', discount_type_percent: 'Пайыз %', custom_discount: 'Өз жеңілдігіңіз ₸', subtotal: 'Аралық сома', no_discount: 'Жеңілдіксіз',
+          own_food: 'Өз тамағымен кіру', own_food_desc: 'Өз сусыны/тамағы үшін алым', add_own_food: 'Өз тамағымен кіруді қосу (+1 000 ₸)'
+        }
+      };
+
+      function loc(key, lang) {
+        const l = lang === 'RU' ? 'ru' : 'kk';
+        return dict[l][key] || dict.ru[key] || key;
+      }
+
+      function App() {
+        const [consoles, setConsoles] = useState([]);
+        const [barItems, setBarItems] = useState([]);
+        const [transactions, setTransactions] = useState([]);
+        const [dailyReports, setDailyReports] = useState([]);
+        const [cart, setCart] = useState([]);
+        const [lang, setLang] = useState('RU');
+        const [activeTab, setActiveTab] = useState(0);
+        const [selectedConsoleId, setSelectedConsoleId] = useState(null);
+        const [toast, setToast] = useState('');
+        const [now, setNow] = useState(new Date());
+
+        // Bar States
+        const [searchQuery, setSearchQuery] = useState('');
+        const [selectedCat, setSelectedCat] = useState(null);
+        const [selectedBarItem, setSelectedBarItem] = useState(null);
+        const [barQuantity, setBarQuantity] = useState(1);
+        const [showAddItem, setShowAddItem] = useState(false);
+        const [newName, setNewName] = useState('');
+        const [newCategory, setNewCategory] = useState('');
+        const [newPrice, setNewPrice] = useState('');
+        const [newCostPrice, setNewCostPrice] = useState('');
+        const [newStock, setNewStock] = useState('');
+
+        // Kaspi QR Modal
+        const [showQR, setShowQR] = useState(false);
+
+        // Admin Modal
+        const [pendingAction, setPendingAction] = useState(null);
+        const [passInput, setPassInput] = useState('');
+        const [passError, setPassError] = useState(false);
+        const [reportDetails, setReportDetails] = useState(null);
+
+        // Stats Subtab
+        const [statsTab, setStatsTab] = useState(0);
+        // Analytics Period Filter
+        const [analyticsPeriod, setAnalyticsPeriod] = useState('shift');
+        // Report Detail Modal
+        const [reportDetailModal, setReportDetailModal] = useState(null);
+
+        // Kassa On/Off & Login
+        const [kassaOpen, setKassaOpen] = useState(null); // null = loading, true/false
+        const [currentUser, setCurrentUser] = useState(null); // { name, role }
+        const [loginPass, setLoginPass] = useState('');
+        const [loginError, setLoginError] = useState(false);
+        const [kassaLoading, setKassaLoading] = useState(true);
+
+        // Rental States
+        const [discountType, setDiscountType] = useState('amount'); // 'amount' (₸) or 'percent' (%)
+        const [discountVal, setDiscountVal] = useState(0);
+        const [customTimeInput, setCustomTimeInput] = useState('');
+        const [psDays, setPsDays] = useState(1);
+        const [joystickPcs, setJoystickPcs] = useState(1);
+
+        const totalRevenue = transactions.reduce((acc, c) => acc + (c.total_amount || 0), 0);
+
+        const getDiscountAmount = (subtotal) => {
+          if (subtotal <= 0) return 0;
+          if (discountType === 'percent') {
+            return Math.min(subtotal, Math.round(subtotal * (discountVal / 100)));
+          }
+          return Math.min(subtotal, Math.max(0, parseFloat(discountVal) || 0));
+        };
+
+        const showToastMsg = (msg) => {
+          setToast(msg);
+          setTimeout(() => setToast(''), 4000);
+        };
+
+        const fetchConsoles = async () => {
+          try {
+            const { data } = await supabase.from('consoles').select('*').order('id');
+            if (!data || data.length === 0) {
+              const defs = [
+                { id: 1, name: '1', type: 'COMMON', status: 'FREE' },
+                { id: 2, name: '2', type: 'COMMON', status: 'FREE' },
+                { id: 3, name: '3', type: 'COMMON', status: 'FREE' },
+                { id: 4, name: '1', type: 'VIP', status: 'FREE' }
+              ];
+              await supabase.from('consoles').insert(defs);
+              setConsoles(defs);
+            } else {
+              setConsoles(data);
+            }
+          } catch (e) { console.error(e); }
+        };
+
+        const fetchInventory = async () => {
+          try {
+            const { data } = await supabase.from('inventory_items').select('*').order('name');
+            setBarItems(data || []);
+          } catch (e) { console.error(e); }
+        };
+
+        const fetchTransactions = async () => {
+          try {
+            const { data } = await supabase.from('transactions').select('*').order('id', { ascending: false });
+            setTransactions(data || []);
+          } catch (e) { console.error(e); }
+        };
+
+        const fetchReports = async () => {
+          try {
+            const { data } = await supabase.from('daily_reports').select('*').order('id', { ascending: false });
+            setDailyReports(data || []);
+          } catch (e) { console.error(e); }
+        };
+
+        const fetchAll = () => {
+          fetchConsoles();
+          fetchInventory();
+          fetchTransactions();
+          fetchReports();
+        };
+
+        const fetchKassaState = async () => {
+          try {
+            const { data } = await supabase.from('kassa_state').select('*').eq('id', 1).single();
+            if (data) {
+              setKassaOpen(data.is_open);
+              if (data.is_open && data.opened_by) {
+                // Restore current user from kassa state
+                const { data: staffData } = await supabase.from('staff').select('*').eq('name', data.opened_by).single();
+                if (staffData) setCurrentUser({ name: staffData.name, role: staffData.role });
+              }
+            }
+          } catch (e) { console.error(e); }
+          setKassaLoading(false);
+        };
+
+        const handleKassaLogin = async () => {
+          const { data: staff } = await supabase.from('staff').select('*').eq('password', loginPass).eq('is_active', true).single();
+          if (staff) {
+            setCurrentUser({ name: staff.name, role: staff.role });
+            setKassaOpen(true);
+            await supabase.from('kassa_state').update({
+              is_open: true,
+              opened_by: staff.name,
+              opened_at: new Date().toISOString()
+            }).eq('id', 1);
+            setLoginPass('');
+            setLoginError(false);
+            showToastMsg(`${loc('kassa_opened_by', lang)}: ${staff.name}`);
+            fetchAll();
+          } else {
+            setLoginError(true);
+          }
+        };
+
+        const handleKassaOff = async () => {
+          await supabase.from('kassa_state').update({
+            is_open: false,
+            closed_by: currentUser?.name || '',
+            closed_at: new Date().toISOString()
+          }).eq('id', 1);
+          showToastMsg(`${loc('kassa_closed_by', lang)}: ${currentUser?.name || ''}`);
+          setKassaOpen(false);
+          setCurrentUser(null);
+        };
+
+        useEffect(() => {
+          fetchKassaState();
+          fetchAll();
+
+          const channel = supabase.channel('vitsa-standalone-jsx')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'consoles' }, fetchConsoles)
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'inventory_items' }, fetchInventory)
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'transactions' }, fetchTransactions)
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'daily_reports' }, fetchReports)
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'kassa_state' }, fetchKassaState)
+            .subscribe();
+
+          const timer = setInterval(() => setNow(new Date()), 1000);
+          return () => {
+            supabase.removeChannel(channel);
+            clearInterval(timer);
+          };
+        }, []);
+
+        // 5-min session warning
+        useEffect(() => {
+          consoles.forEach(c => {
+            const s = c.current_session;
+            if (s && s.end_time && !s.notified_five_min) {
+              const end = new Date(s.end_time).getTime();
+              const diffMin = (end - now.getTime()) / (1000 * 60);
+              if (diffMin >= 0 && diffMin <= 5) {
+                showToastMsg(`Осталось 5 минут: ${c.type === 'VIP' ? 'ВИП' : 'Общий'} ${c.name}`);
+                supabase.from('consoles').update({
+                  current_session: { ...s, notified_five_min: true }
+                }).eq('id', c.id).then(fetchConsoles);
+              }
+            }
+          });
+        }, [now, consoles]);
+
+        const calcCost = (c) => {
+          const s = c.current_session;
+          if (!s) return 0;
+          const extrasSum = (s.extras || []).reduce((acc, x) => acc + (x.price || 0), 0);
+          if (s.fixed_price !== null && s.fixed_price !== undefined) {
+            return s.fixed_price + extrasSum;
+          }
+          const start = s.start_time ? new Date(s.start_time).getTime() : now.getTime();
+          const mins = Math.max(0, (now.getTime() - start) / 60000);
+          return Math.floor((mins / 60) * (s.hourly_rate || 1500) + extrasSum);
+        };
+
+        const getRemTime = (c) => {
+          const s = c.current_session;
+          if (!s || !s.end_time) return loc('until_stop', lang);
+          const end = new Date(s.end_time).getTime();
+          const diff = end - now.getTime();
+          if (diff <= 0) return '00:00:00';
+          const secs = Math.floor(diff / 1000);
+          const h = Math.floor(secs / 3600).toString().padStart(2, '0');
+          const m = Math.floor((secs % 3600) / 60).toString().padStart(2, '0');
+          const sec = (secs % 60).toString().padStart(2, '0');
+          return `${h}:${m}:${sec}`;
+        };
+
+        const addToCart = (item) => {
+          if (item.kind === 'session') {
+            if (cart.some(x => x.kind === 'session' && x.consoleId === item.consoleId)) return;
+          }
+          setCart(prev => [...prev, item]);
+          showToastMsg('Добавлено в корзину');
+        };
+
+        const checkout = async (method = 'KASPI') => {
+          let subtotal = cart.reduce((a, c) => a + c.price, 0);
+          let totalDiscount = getDiscountAmount(subtotal);
+          const discountRatio = subtotal > 0 ? (1 - totalDiscount / subtotal) : 1;
+          
+          let precalcTotal = 0;
+          for (const item of cart) {
+            precalcTotal += Math.round(item.price * discountRatio);
+          }
+
+          let methodLabel = method === 'CASH' ? 'НАЛИЧНЫЕ' : 'KASPI QR';
+          if (method === 'MIXED' && precalcTotal > 0) {
+            const input = window.prompt(`К оплате: ${precalcTotal} ₸.\nСколько из них оплачено через Kaspi?`);
+            if (input === null) return; // cancel checkout
+            const kaspiAmt = parseInt(input);
+            if (isNaN(kaspiAmt) || kaspiAmt < 0 || kaspiAmt > precalcTotal) {
+              showToastMsg('Некорректная сумма');
+              return;
+            }
+            const cashAmt = precalcTotal - kaspiAmt;
+            methodLabel = `СМЕШАННАЯ (Kaspi: ${kaspiAmt} ₸, Нал: ${cashAmt} ₸)`;
+          }
+
+          let totalAmt = 0;
+          let totalCst = 0;
+          const txItems = [];
+
+          for (const item of cart) {
+            let itemPrice = Math.round(item.price * discountRatio);
+            totalAmt += itemPrice;
+
+            if (item.kind === 'session') {
+              const start = new Date();
+              const end = item.durationMinutes ? new Date(start.getTime() + item.durationMinutes * 60000) : null;
+              const consoleObj = consoles.find(c => c.id === item.consoleId);
+              const rate = consoleObj?.type === 'VIP' ? 2500 : 1500;
+
+              const session = {
+                start_time: start.toISOString(),
+                end_time: end ? end.toISOString() : null,
+                duration_minutes: item.durationMinutes,
+                hourly_rate: rate,
+                fixed_price: item.fixedPrice !== null ? Math.round(item.fixedPrice * discountRatio) : null,
+                package_name: item.packageName,
+                extras: [],
+                is_paid: true
+              };
+
+              await supabase.from('consoles').update({
+                status: 'BUSY',
+                current_session: session
+              }).eq('id', item.consoleId);
+
+              if (itemPrice > 0) {
+                txItems.push({ title: item.title, price: itemPrice, cost_price: 0 });
+              }
+            } else if (item.kind === 'bar') {
+              const inv = barItems.find(b => b.id === item.itemId);
+              const cost = (inv?.cost_price || 0) * item.quantity;
+              totalCst += cost;
+
+              if (item.consoleId) {
+                const c = consoles.find(x => x.id === item.consoleId);
+                if (c && c.current_session) {
+                  const extras = [...(c.current_session.extras || []), { name: item.title, price: itemPrice, cost_price: inv?.cost_price || 0 }];
+                  await supabase.from('consoles').update({
+                    current_session: { ...c.current_session, extras }
+                  }).eq('id', item.consoleId);
+                }
+              }
+
+              if (inv) {
+                await supabase.from('inventory_items').update({
+                  stock: Math.max(0, inv.stock - item.quantity)
+                }).eq('id', item.itemId);
+              }
+
+              txItems.push({ title: item.title, price: itemPrice, cost_price: cost });
+            } else if (item.kind === 'rental') {
+              txItems.push({ title: item.title, price: itemPrice, cost_price: 0 });
+            }
+          }
+
+          if (totalAmt > 0 && txItems.length > 0) {
+            const finalItems = [...txItems, { title: `ОПЛАТА: ${methodLabel}`, price: 0, cost_price: 0 }];
+            
+            await supabase.from('transactions').insert({
+              id: Date.now(),
+              total_amount: totalAmt,
+              total_cost: totalCst,
+              timestamp: new Date().toISOString(),
+              items: finalItems
+            });
+          }
+
+          setCart([]);
+          setDiscountVal(0);
+          setShowQR(false);
+          showToastMsg('Оплата успешно проведена!');
+          fetchAll();
+        };
+
+        const stopSession = async (cid, method = 'KASPI') => {
+          const c = consoles.find(x => x.id === cid);
+          if (!c) return;
+          const s = c.current_session;
+
+          if (s && s.fixed_price === null) {
+            const start = s.start_time ? new Date(s.start_time).getTime() : now.getTime();
+            const mins = Math.max(0, (now.getTime() - start) / 60000);
+            const timeCost = (mins / 60) * (s.hourly_rate || 1500);
+            const extrasSum = (s.extras || []).reduce((acc, x) => acc + (x.price || 0), 0);
+            const amount = Math.floor(timeCost + extrasSum);
+            const extrasCost = (s.extras || []).reduce((acc, x) => acc + (x.cost_price || 0), 0);
+
+            let methodLabel = method === 'CASH' ? 'НАЛИЧНЫЕ' : 'KASPI QR';
+            if (method === 'MIXED' && amount > 0) {
+              const input = window.prompt(`К оплате: ${amount} ₸.\nСколько из них оплачено через Kaspi?`);
+              if (input === null) return; // Cancel finishing session if input cancelled
+              const kaspiAmt = parseInt(input);
+              if (isNaN(kaspiAmt) || kaspiAmt < 0 || kaspiAmt > amount) {
+                showToastMsg('Некорректная сумма');
+                return;
+              }
+              const cashAmt = amount - kaspiAmt;
+              methodLabel = `СМЕШАННАЯ (Kaspi: ${kaspiAmt} ₸, Нал: ${cashAmt} ₸)`;
+            }
+            const title = `ДО УПОРА: ${c.type === 'VIP' ? 'ВИП' : 'Общий'} ${c.name}`;
+            await supabase.from('transactions').insert({
+              id: Date.now(),
+              total_amount: amount,
+              total_cost: extrasCost,
+              timestamp: new Date().toISOString(),
+              items: [
+                { title, price: amount, cost_price: 0 },
+                { title: `ОПЛАТА: ${methodLabel}`, price: 0, cost_price: 0 }
+              ]
+            });
+          }
+
+          await supabase.from('consoles').update({
+            status: 'FREE',
+            current_session: null,
+            booked_by: null
+          }).eq('id', cid);
+
+          showToastMsg('Сессия завершена');
+          setSelectedConsoleId(null);
+          fetchAll();
+        };
+
+        const addTimeToSession = async (cid, minutes) => {
+          const c = consoles.find(x => x.id === cid);
+          if (!c || !c.current_session) return;
+          const s = c.current_session;
+
+          if (!s.end_time) {
+            showToastMsg('Нельзя изменить время (тариф ДО УПОРА)');
+            return;
+          }
+
+          const rate = s.hourly_rate || (c.type === 'VIP' ? 2500 : 1500);
+          const addPrice = minutes > 0 ? (minutes / 60) * rate : 0;
+
+          const oldEndTime = new Date(s.end_time).getTime();
+          const newEndTime = new Date(oldEndTime + minutes * 60000).toISOString();
+
+          const sign = minutes > 0 ? '+' : '';
+          const name = minutes > 0 ? `Продление ${minutes} мин` : `Уменьшение ${Math.abs(minutes)} мин`;
+          
+          const newExtras = [...(s.extras || []), { name: name, price: addPrice, cost_price: 0 }];
+
+          await supabase.from('consoles').update({
+            current_session: {
+              ...s,
+              end_time: newEndTime,
+              duration_minutes: (s.duration_minutes || 0) + minutes,
+              extras: newExtras
+            }
+          }).eq('id', cid);
+
+          showToastMsg(`${sign}${minutes} мин (${sign}${Math.round(addPrice)} ₸)`);
+          fetchConsoles();
+        };
+
+        const bookConsole = async (cid, name) => {
+          await supabase.from('consoles').update({
+            status: 'BOOKED',
+            booked_by: name
+          }).eq('id', cid);
+          showToastMsg('Консоль забронирована');
+          setSelectedConsoleId(null);
+          fetchConsoles();
+        };
+
+        const handleAddProduct = async (e) => {
+          e.preventDefault();
+          const p = parseFloat(newPrice) || 0;
+          const cp = parseFloat(newCostPrice) || 0;
+          const s = parseInt(newStock) || 0;
+
+          if (newName.trim() && newCategory.trim()) {
+            await supabase.from('inventory_items').insert({
+              name: newName.trim().toUpperCase(),
+              category: newCategory.trim().toUpperCase(),
+              price: p,
+              cost_price: cp,
+              stock: s
+            });
+            showToastMsg('Товар добавлен');
+            setShowAddItem(false);
+            setNewName(''); setNewCategory(''); setNewPrice(''); setNewCostPrice(''); setNewStock('');
+            fetchInventory();
+          }
+        };
+
+        const handleAdminAuth = async () => {
+          let staffName = currentUser?.name || null;
+          
+          if (passInput === 'erkebulan') staffName = 'Еркебулан';
+          else if (passInput === '2103') staffName = 'Кассир 1';
+          else if (passInput === '2403') staffName = 'Кассир 2';
+
+          try {
+            const { data: staff } = await supabase.from('staff').select('*').eq('password', passInput).eq('is_active', true).maybeSingle();
+            if (staff) staffName = staff.name;
+          } catch (e) { console.error(e); }
+
+          if (staffName) {
+            if (pendingAction) {
+              if (pendingAction.type === 'RESET') {
+                if (totalRevenue > 0 || transactions.length > 0) {
+                  const reportData = {
+                    id: Date.now(),
+                    date: new Date().toISOString(),
+                    amount: totalRevenue,
+                    transactions,
+                    closed_by: staffName
+                  };
+                  let { error: repErr } = await supabase.from('daily_reports').insert(reportData);
+                  if (repErr) {
+                    console.warn('Fallback insert without closed_by column:', repErr);
+                    delete reportData.closed_by;
+                    await supabase.from('daily_reports').insert(reportData);
+                  }
+                  if (transactions.length > 0) {
+                    await supabase.from('transactions').delete().in('id', transactions.map(t => t.id));
+                  }
+                  showToastMsg('Смена успешно закрыта');
+                  fetchAll();
+                }
+              } else if (pendingAction.type === 'DEL_TX') {
+                await supabase.from('transactions').delete().eq('id', pendingAction.tx.id);
+                showToastMsg('Чек удален');
+                fetchTransactions();
+              } else if (pendingAction.type === 'DEL_ITEM') {
+                const tx = transactions.find(t => t.id === pendingAction.txId);
+                if (tx) {
+                  const newItems = (tx.items || []).filter((_, i) => i !== pendingAction.idx);
+                  if (newItems.length === 0) {
+                    await supabase.from('transactions').delete().eq('id', tx.id);
+                  } else {
+                    const newTot = newItems.reduce((a, c) => a + (c.price || 0), 0);
+                    const newCost = newItems.reduce((a, c) => a + (c.cost_price || 0), 0);
+                    await supabase.from('transactions').update({ items: newItems, total_amount: newTot, total_cost: newCost }).eq('id', tx.id);
+                  }
+                  showToastMsg('Позиция удалена');
+                  fetchTransactions();
+                }
+              } else if (pendingAction.type === 'DEL_REP') {
+                await supabase.from('daily_reports').delete().eq('id', pendingAction.report.id);
+                showToastMsg('Отчет удален');
+                fetchReports();
+              } else if (pendingAction.type === 'KASSA_OFF') {
+                handleKassaOff();
+              }
+            }
+            setPendingAction(null);
+            setPassInput('');
+            setPassError(false);
+          } else {
+            setPassError(true);
+          }
+        };
+
+        const categories = Array.from(new Set(barItems.map(i => i.category))).sort();
+        const filteredBarItems = barItems.filter(i => {
+          const mSearch = i.name.toLowerCase().includes(searchQuery.toLowerCase());
+          const mCat = selectedCat === null || i.category === selectedCat;
+          return mSearch && mCat;
+        });
+
+        const selectedConsole = consoles.find(c => c.id === selectedConsoleId);
+
+        return (
+          <div className="app-container">
+            {toast && (
+              <div className="toast-container">
+                <div className="toast">{toast}</div>
+              </div>
+            )}
+
+            {/* Loading State */}
+            {kassaLoading && (
+              <div className="kassa-lock-screen">
+                <div className="lock-spinner" />
+              </div>
+            )}
+
+            {/* Kassa OFF - Lock Screen */}
+            {!kassaLoading && !kassaOpen && (
+              <div className="kassa-lock-screen">
+                <div className="lock-card">
+                  <div className="lock-icon-big">
+                    <Icon name="lock" size={56} color="var(--neon-cyan)" />
+                  </div>
+                  <div className="lock-title">VITSA PS CLUB</div>
+                  <div className="lock-subtitle">{loc('kassa_off', lang)}</div>
+                  <div style={{ width: '100%', marginTop: '24px' }}>
+                    <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '8px' }}>
+                      {loc('enter_your_password', lang)}
+                    </div>
+                    <input
+                      type="password"
+                      value={loginPass}
+                      onChange={e => { setLoginPass(e.target.value); setLoginError(false); }}
+                      onKeyDown={e => e.key === 'Enter' && handleKassaLogin()}
+                      className="input-field"
+                      placeholder={loc('password', lang)}
+                      autoFocus
+                      style={{ textAlign: 'center', fontSize: '1.2rem', letterSpacing: '4px' }}
+                    />
+                    {loginError && <div style={{ color: 'var(--neon-pink)', fontSize: '0.8rem', marginTop: '6px', textAlign: 'center' }}>{loc('wrong_password', lang)}</div>}
+                  </div>
+                  <button className="btn-primary" style={{ width: '100%', padding: '16px', marginTop: '16px', fontSize: '1.1rem' }} onClick={handleKassaLogin}>
+                    <Icon name="monitor" size={22} />
+                    {loc('turn_on_kassa', lang)}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Kassa ON - Main App */}
+            {!kassaLoading && kassaOpen && (
+            <>
+            {/* Header */}
+            <header className="logo-header">
+              <div className="logo-left">
+                <div className="logo-icon-wrapper">
+                  <Icon name="monitor" size={28} color="#00FFFF" />
+                </div>
+                <div className="logo-title-group">
+                  <span className="logo-brand-name">VITSA</span>
+                  <span className="logo-brand-sub">PS CLUB</span>
+                </div>
+              </div>
+              <div className="header-actions">
+                {currentUser && (
+                  <div className="operator-badge">
+                    <Icon name="lock" size={14} />
+                    <span>{currentUser.name}</span>
+                  </div>
+                )}
+                <button className="action-btn" onClick={fetchAll} title="Обновить">
+                  <Icon name="refresh" size={18} />
+                </button>
+                <button className="action-btn" onClick={() => setLang(l => l === 'RU' ? 'KK' : 'RU')}>
+                  {lang}
+                </button>
+                <button className="action-btn" style={{ borderColor: 'rgba(255,0,255,0.4)', color: 'var(--neon-pink)' }}
+                  onClick={() => setPendingAction({ type: 'KASSA_OFF' })} title={loc('turn_off_kassa', lang)}>
+                  <Icon name="lock" size={18} color="var(--neon-pink)" />
+                </button>
+              </div>
+            </header>
+
+            {/* Desktop Navigation */}
+            <nav className="desktop-nav">
+              {[
+                { id: 0, label: loc('consoles', lang), icon: 'gamepad' },
+                { id: 1, label: loc('bar', lang), icon: 'coffee' },
+                { id: 5, label: loc('hookah', lang), icon: 'smoke' },
+                { id: 4, label: loc('rent', lang), icon: 'tv' },
+                { id: 3, label: loc('cart', lang), icon: 'cart', badge: cart.length },
+                { id: 2, label: loc('stats', lang), icon: 'stats' }
+              ].map(t => (
+                <button
+                  key={t.id}
+                  onClick={() => setActiveTab(t.id)}
+                  className={`desktop-nav-item ${activeTab === t.id ? 'active' : ''}`}
+                >
+                  <Icon name={t.icon} size={20} />
+                  <span>{t.label}</span>
+                  {t.badge > 0 && <span className="badge" style={{ position: 'static' }}>{t.badge}</span>}
+                </button>
+              ))}
+            </nav>
+
+            {/* Mobile Navigation */}
+            <nav className="mobile-nav">
+              {[
+                { id: 0, label: loc('consoles', lang), icon: 'gamepad' },
+                { id: 1, label: loc('bar', lang), icon: 'coffee' },
+                { id: 5, label: loc('hookah', lang), icon: 'smoke' },
+                { id: 4, label: loc('rent', lang), icon: 'tv' },
+                { id: 3, label: loc('cart', lang), icon: 'cart', badge: cart.length },
+                { id: 2, label: loc('stats', lang), icon: 'stats' }
+              ].map(t => (
+                <button
+                  key={t.id}
+                  onClick={() => setActiveTab(t.id)}
+                  className={`nav-item ${activeTab === t.id ? 'active' : ''}`}
+                >
+                  <Icon name={t.icon} size={22} />
+                  <span>{t.label}</span>
+                  {t.badge > 0 && <span className="badge">{t.badge}</span>}
+                </button>
+              ))}
+            </nav>
+
+            {/* Main Content */}
+            <main className="page-content">
+              {/* Tab 0: Consoles */}
+              {activeTab === 0 && (
+                <div className="consoles-grid">
+                  {consoles.map(c => {
+                    const isVip = c.type === 'VIP';
+                    const isBusy = c.status === 'BUSY';
+                    const isBooked = c.status === 'BOOKED';
+                    const accentColor = isVip ? 'var(--neon-purple)' : 'var(--neon-blue)';
+                    const label = isVip ? `${loc('vip', lang)} ${c.name}` : `${loc('common', lang)} ${c.name}`;
+
+                    return (
+                      <div
+                        key={c.id}
+                        onClick={() => setSelectedConsoleId(c.id)}
+                        className={`console-card ${isVip ? 'vip' : 'common'} ${isBusy ? 'busy' : ''} ${isBooked ? 'booked' : ''}`}
+                      >
+                        <div className="card-header">
+                          <div className="card-icon">
+                            <Icon name="gamepad" size={36} color={accentColor} />
+                          </div>
+                          <span className={`status-badge ${isBusy ? 'busy' : isBooked ? 'booked' : 'free'}`}>
+                            {isBusy ? loc('busy', lang) : isBooked ? loc('booked', lang) : loc('free', lang)}
+                          </span>
+                        </div>
+
+                        <div className="console-title">{label}</div>
+
+                        <div className="card-body">
+                          {isBusy && c.current_session ? (
+                            <>
+                              <div className="time-start">
+                                {lang === 'RU' ? 'Старт: ' : 'Басталды: '}
+                                {c.current_session.start_time ? new Date(c.current_session.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '--:--'}
+                              </div>
+                              {c.current_session.end_time && (
+                                <div className="time-start" style={{ color: 'var(--neon-pink)' }}>
+                                  {lang === 'RU' ? 'До: ' : 'Уақыты: '}
+                                  {new Date(c.current_session.end_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                </div>
+                              )}
+                              <div className="time-remaining" style={{ color: accentColor }}>
+                                {getRemTime(c)}
+                              </div>
+                              <div className="cost-tag">{calcCost(c)} ₸</div>
+                            </>
+                          ) : isBooked ? (
+                            <div style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
+                              {loc('reserved_for', lang)} {c.booked_by || ''}
+                            </div>
+                          ) : (
+                            <div className="tap-start-text">{loc('tap_to_start', lang)}</div>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* Tab 1: Bar */}
+              {activeTab === 1 && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--neon-cyan)' }}>
+                      {loc('bar_and_snacks', lang)}
+                    </h2>
+                    <button className="action-btn" onClick={() => setShowAddItem(true)}>
+                      <Icon name="plus" size={20} />
+                    </button>
+                  </div>
+
+                  {/* Quick Entry Fee for Own Food */}
+                  <div style={{
+                    background: 'linear-gradient(135deg, rgba(255, 0, 128, 0.15), rgba(191, 0, 255, 0.15))',
+                    border: '1.5px solid rgba(255, 0, 255, 0.4)',
+                    borderRadius: '16px',
+                    padding: '14px 18px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    boxShadow: '0 4px 16px rgba(255, 0, 128, 0.15)'
+                  }}>
+                    <div>
+                      <div style={{ fontWeight: 800, fontSize: '1.05rem', color: '#fff' }}>
+                        🍕 {loc('own_food', lang)}
+                      </div>
+                      <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
+                        {loc('own_food_desc', lang)}
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <span style={{ fontWeight: 900, fontSize: '1.2rem', color: 'var(--neon-pink)' }}>
+                        1 000 ₸
+                      </span>
+                      <button
+                        className="btn-pink"
+                        style={{ padding: '8px 16px', fontSize: '0.85rem' }}
+                        onClick={() => addToCart({ kind: 'bar', itemId: 9999, title: `БАР: ${loc('own_food', lang)}`, price: 1000, quantity: 1 })}
+                      >
+                        + {loc('add_to_cart', lang)}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="search-box">
+                    <Icon name="search" size={18} className="search-icon" />
+                    <input
+                      type="text"
+                      placeholder={loc('search_placeholder', lang)}
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="input-field search-input"
+                    />
+                  </div>
+
+                  <div className="category-chips">
+                    <button
+                      className={`chip ${selectedCat === null ? 'active' : ''}`}
+                      onClick={() => setSelectedCat(null)}
+                    >
+                      {loc('all', lang)}
+                    </button>
+                    {categories.map(cat => (
+                      <button
+                        key={cat}
+                        className={`chip ${selectedCat === cat ? 'active' : ''}`}
+                        onClick={() => setSelectedCat(cat)}
+                      >
+                        {cat}
+                      </button>
+                    ))}
+                  </div>
+
+                  <div>
+                    {filteredBarItems.map(item => (
+                      <div key={item.id} className="bar-item-card">
+                        <div>
+                          <div style={{ fontWeight: 700, fontSize: '1rem' }}>{item.name}</div>
+                          <div style={{ display: 'flex', gap: '10px', marginTop: '4px', fontSize: '0.75rem' }}>
+                            <span style={{ color: 'var(--text-secondary)' }}>{item.category}</span>
+                            <span style={{ color: item.stock < 5 ? 'var(--neon-pink)' : 'var(--neon-cyan)', fontWeight: 700 }}>
+                              {loc('in_stock', lang)}: {item.stock}
+                            </span>
+                          </div>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                          <span style={{ fontWeight: 800, fontSize: '1.1rem', color: 'var(--neon-cyan)' }}>
+                            {item.price} ₸
+                          </span>
+                          <button
+                            disabled={item.stock <= 0}
+                            onClick={() => { setSelectedBarItem(item); setBarQuantity(1); }}
+                            className="btn-primary"
+                            style={{ padding: '6px 14px', fontSize: '0.8rem', opacity: item.stock <= 0 ? 0.4 : 1 }}
+                          >
+                            {item.stock > 0 ? loc('add_to_cart', lang) : loc('no_stock', lang)}
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Tab 4: Rental */}
+              {activeTab === 4 && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <h2 style={{ fontSize: '1.6rem', fontWeight: 900, color: 'var(--neon-cyan)' }}>
+                      {loc('rent', lang).toUpperCase()}
+                    </h2>
+                  </div>
+
+                  {/* Rental Grid */}
+                  <div className="rental-grid">
+                    {/* Card 1: PS Rental */}
+                    <div className="rental-card">
+                      <div className="rental-card-header">
+                        <div className="rental-icon-wrap cyan">
+                          <Icon name="tv" size={32} color="var(--neon-cyan)" />
+                        </div>
+                        <div>
+                          <div className="rental-title">{loc('ps_rental', lang)}</div>
+                          <div className="rental-price-tag">7 000 ₸ {loc('per_day', lang)}</div>
+                        </div>
+                      </div>
+
+                      <div className="rental-counter-row">
+                        <span>{loc('days_count', lang)}:</span>
+                        <div className="counter-controls">
+                          <button className="action-btn" onClick={() => setPsDays(d => Math.max(1, d - 1))}>-</button>
+                          <span className="counter-val">{psDays}</span>
+                          <button className="action-btn" onClick={() => setPsDays(d => d + 1)}>+</button>
+                        </div>
+                      </div>
+
+                      <div className="rental-total-row">
+                        <span>{loc('total', lang)}:</span>
+                        <span className="rental-total-val">{(7000 * psDays).toLocaleString()} ₸</span>
+                      </div>
+
+                      <button
+                        className="btn-primary"
+                        style={{ width: '100%', padding: '12px' }}
+                        onClick={() => {
+                          const tot = 7000 * psDays;
+                          const title = `АРЕНДА: PS (${psDays} сут.)`;
+                          addToCart({ kind: 'rental', title, price: tot, days: psDays });
+                        }}
+                      >
+                        <Icon name="cart" size={18} />
+                        {loc('add_to_cart', lang)}
+                      </button>
+                    </div>
+
+                    {/* Card 2: Joystick Rental */}
+                    <div className="rental-card">
+                      <div className="rental-card-header">
+                        <div className="rental-icon-wrap purple">
+                          <Icon name="gamepad" size={32} color="var(--neon-purple)" />
+                        </div>
+                        <div>
+                          <div className="rental-title">{loc('joystick_rental', lang)}</div>
+                          <div className="rental-price-tag">2 000 ₸ {loc('per_pcs', lang)}</div>
+                        </div>
+                      </div>
+
+                      <div className="rental-counter-row">
+                        <span>{loc('pcs_count', lang)}:</span>
+                        <div className="counter-controls">
+                          <button className="action-btn" onClick={() => setJoystickPcs(q => Math.max(1, q - 1))}>-</button>
+                          <span className="counter-val">{joystickPcs}</span>
+                          <button className="action-btn" onClick={() => setJoystickPcs(q => q + 1)}>+</button>
+                        </div>
+                      </div>
+
+                      <div className="rental-total-row">
+                        <span>{loc('total', lang)}:</span>
+                        <span className="rental-total-val" style={{ color: 'var(--neon-purple)' }}>{(2000 * joystickPcs).toLocaleString()} ₸</span>
+                      </div>
+
+                      <button
+                        className="btn-primary"
+                        style={{ width: '100%', padding: '12px', background: 'var(--neon-purple)', color: '#fff' }}
+                        onClick={() => {
+                          const tot = 2000 * joystickPcs;
+                          const title = `АРЕНДА: Джойстик x${joystickPcs}`;
+                          addToCart({ kind: 'rental', title, price: tot, pcs: joystickPcs });
+                        }}
+                      >
+                        <Icon name="cart" size={18} />
+                        {loc('add_to_cart', lang)}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Preset Quick Bundles */}
+                  <div className="analytics-chart-card">
+                    <div className="chart-header">
+                      <Icon name="plus" size={20} color="var(--neon-pink)" />
+                      <span>{loc('quick_bundles', lang)}</span>
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                      {[
+                        { title: 'ПАКЕТ «PS + 1 ДЖОЙСТИК»', price: 9000 },
+                        { title: 'ПАКЕТ «PS + 2 ДЖОЙСТИКА»', price: 11000 },
+                        { title: 'ПАКЕТ «PS + 4 ДЖОЙСТИКА»', price: 15000 },
+                        { title: 'ПАКЕТ «2 ДЖОЙСТИКА (БЕЗ PS)»', price: 4000 }
+                      ].map((bundle, idx) => (
+                        <div key={idx} className="packet-btn" style={{ margin: 0 }} onClick={() => {
+                          addToCart({ kind: 'rental', title: `АРЕНДА: ${bundle.title}`, price: bundle.price });
+                        }}>
+                          <span>{bundle.title}</span>
+                          <span style={{ color: 'var(--neon-cyan)', fontWeight: 800 }}>{bundle.price.toLocaleString()} ₸</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Tab 5: Hookah */}
+              {activeTab === 5 && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <h2 style={{ fontSize: '1.6rem', fontWeight: 900, color: 'var(--neon-cyan)' }}>
+                      {loc('hookah', lang).toUpperCase()}
+                    </h2>
+                  </div>
+
+                  <div className="analytics-chart-card">
+                    <div className="chart-header">
+                      <Icon name="smoke" size={20} color="var(--neon-purple)" />
+                      <span>{loc('hookah_menu', lang)}</span>
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                      {[
+                        { title: loc('hookah_weak', lang), price: 4000 },
+                        { title: loc('hookah_medium', lang), price: 5500 },
+                        { title: loc('hookah_strong', lang), price: 7000 },
+                        { title: loc('hookah_coal', lang), price: 500 }
+                      ].map((item, idx) => (
+                        <div key={idx} className="packet-btn" style={{ margin: 0 }} onClick={() => {
+                          addToCart({ kind: 'rental', title: `БАР: Кальян (${item.title})`, price: item.price });
+                        }}>
+                          <span>{item.title}</span>
+                          <span style={{ color: 'var(--neon-cyan)', fontWeight: 800 }}>{item.price.toLocaleString()} ₸</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Tab 3: Cart */}
+              {activeTab === 3 && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <h2 style={{ fontSize: '1.8rem', fontWeight: 900, color: 'var(--neon-cyan)' }}>
+                    {loc('cart', lang).toUpperCase()}
+                  </h2>
+                  {cart.length === 0 ? (
+                    <div style={{ textAlign: 'center', padding: '60px', color: 'var(--text-secondary)' }}>
+                      {loc('cart_empty', lang)}
+                    </div>
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                      {cart.map((item, idx) => (
+                        <div key={idx} className="cart-card">
+                          <div>
+                            <div style={{ fontWeight: 700, fontSize: '1rem' }}>{item.title}</div>
+                            {item.price > 0 ? (
+                              <div style={{ color: 'var(--neon-cyan)', fontWeight: 800, marginTop: '4px' }}>
+                                {item.price} ₸
+                              </div>
+                            ) : (
+                              <div style={{ color: 'var(--neon-pink)', fontSize: '0.8rem' }}>
+                                {lang === 'RU' ? 'Оплата по факту' : 'Шыққанда төлеу'}
+                              </div>
+                            )}
+                          </div>
+                          <button
+                            onClick={() => setCart(prev => prev.filter((_, i) => i !== idx))}
+                            style={{ background: 'none', border: 'none', color: 'var(--neon-pink)', cursor: 'pointer' }}
+                          >
+                            <Icon name="trash" size={20} />
+                          </button>
+                        </div>
+                      ))}
+                      <div className="cart-summary-card">
+                        {/* Discount Type Selector */}
+                        <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
+                          <button
+                            className={`chip ${discountType === 'amount' ? 'active' : ''}`}
+                            onClick={() => { setDiscountType('amount'); setDiscountVal(0); }}
+                            style={{ flex: 1, padding: '8px', fontSize: '0.85rem' }}
+                          >
+                            💰 {loc('discount_type_amount', lang)}
+                          </button>
+                          <button
+                            className={`chip ${discountType === 'percent' ? 'active' : ''}`}
+                            onClick={() => { setDiscountType('percent'); setDiscountVal(0); }}
+                            style={{ flex: 1, padding: '8px', fontSize: '0.85rem' }}
+                          >
+                            % {loc('discount_type_percent', lang)}
+                          </button>
+                        </div>
+
+                        {/* Discount Preset Chips & Custom Input */}
+                        {discountType === 'amount' ? (
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
+                            <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                              {[0, 500, 1000, 1500, 2000, 3000].map(amt => (
+                                <button
+                                  key={amt}
+                                  className={`chip ${discountVal === amt ? 'active' : ''}`}
+                                  onClick={() => setDiscountVal(amt)}
+                                  style={{ padding: '6px 12px', fontSize: '0.8rem' }}
+                                >
+                                  {amt === 0 ? loc('no_discount', lang) : `- ${amt} ₸`}
+                                </button>
+                              ))}
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
+                              <input
+                                type="number"
+                                placeholder={loc('custom_discount', lang)}
+                                value={discountVal || ''}
+                                onChange={e => setDiscountVal(Math.max(0, parseFloat(e.target.value) || 0))}
+                                className="input-field"
+                                style={{ padding: '8px 12px', fontSize: '0.9rem' }}
+                              />
+                              <span style={{ fontWeight: 800, color: 'var(--neon-cyan)', fontSize: '0.9rem' }}>₸</span>
+                            </div>
+                          </div>
+                        ) : (
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
+                            <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                              {[0, 5, 10, 15, 20, 30, 50].map(pct => (
+                                <button
+                                  key={pct}
+                                  className={`chip ${discountVal === pct ? 'active' : ''}`}
+                                  onClick={() => setDiscountVal(pct)}
+                                  style={{ flex: '1 1 20%', padding: '6px 8px', fontSize: '0.8rem' }}
+                                >
+                                  {pct === 0 ? (lang === 'RU' ? 'Нет' : 'Жоқ') : `-${pct}%`}
+                                </button>
+                              ))}
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
+                              <input
+                                type="number"
+                                placeholder={loc('custom_discount', lang)}
+                                value={discountVal || ''}
+                                onChange={e => setDiscountVal(Math.max(0, parseFloat(e.target.value) || 0))}
+                                className="input-field"
+                                style={{ padding: '8px 12px', fontSize: '0.9rem' }}
+                              />
+                              <span style={{ fontWeight: 800, color: 'var(--neon-cyan)', fontSize: '0.9rem' }}>%</span>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Price Summary */}
+                        {(() => {
+                          const subtotal = cart.reduce((a, c) => a + c.price, 0);
+                          const discAmount = getDiscountAmount(subtotal);
+                          const finalTotal = Math.max(0, subtotal - discAmount);
+
+                          return (
+                            <>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '16px', fontSize: '0.95rem' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary)' }}>
+                                  <span>{loc('subtotal', lang)}:</span>
+                                  <span>{subtotal.toLocaleString()} ₸</span>
+                                </div>
+                                {discAmount > 0 && (
+                                  <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--neon-pink)', fontWeight: 700 }}>
+                                    <span>{loc('discount', lang)} {discountType === 'percent' ? `(${discountVal}%)` : ''}:</span>
+                                    <span>- {discAmount.toLocaleString()} ₸</span>
+                                  </div>
+                                )}
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '8px', borderTop: '1px solid rgba(139,148,158,0.2)' }}>
+                                  <span style={{ fontSize: '1.2rem', fontWeight: 800 }}>{loc('total', lang)}:</span>
+                                  <span style={{ fontSize: '1.6rem', fontWeight: 900, color: 'var(--neon-cyan)' }}>
+                                    {finalTotal.toLocaleString()} ₸
+                                  </span>
+                                </div>
+                              </div>
+
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                {finalTotal > 0 ? (
+                                  <>
+                                    <button
+                                      className="btn-primary"
+                                      style={{ width: '100%', padding: '14px' }}
+                                      onClick={() => setShowQR(true)}
+                                    >
+                                      {loc('pay_kaspi', lang)}
+                                    </button>
+                                    <button
+                                      className="btn-primary"
+                                      style={{ width: '100%', padding: '14px', background: 'var(--surface-dark)', color: '#fff', border: '1px solid #4ade80' }}
+                                      onClick={() => checkout('CASH')}
+                                    >
+                                      {lang === 'RU' ? 'ОПЛАТИТЬ НАЛИЧНЫМИ' : 'ҚОЛМА-ҚОЛ АҚШАМЕН ТӨЛЕУ'}
+                                    </button>
+                                    <button
+                                      className="btn-primary"
+                                      style={{ width: '100%', padding: '14px', background: 'var(--surface-dark)', color: '#eab308', border: '1px solid #eab308' }}
+                                      onClick={() => checkout('MIXED')}
+                                    >
+                                      {lang === 'RU' ? 'СМЕШАННАЯ ОПЛАТА' : 'АРАЛАС ТӨЛЕМ'}
+                                    </button>
+
+                                  </>
+                                ) : (
+                                  <button
+                                    className="btn-primary"
+                                    style={{ width: '100%', padding: '14px' }}
+                                    onClick={() => checkout('KASPI')}
+                                  >
+                                    {lang === 'RU' ? 'ПОДТВЕРДИТЬ' : 'РАСТАУ'}
+                                  </button>
+                                )}
+                              </div>
+                            </>
+                          );
+                        })()}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Tab 2: Stats */}
+              {activeTab === 2 && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <div className="stats-header-card">
+                    <div>
+                      <div style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-secondary)' }}>
+                        {lang === 'RU' ? 'ВЫРУЧКА ЗА СМЕНУ' : 'АУЫСЫМДАҒЫ ТАБЫС'}
+                      </div>
+                      <div style={{ fontSize: '2rem', fontWeight: 900, color: 'var(--neon-cyan)' }}>
+                        {totalRevenue} ₸
+                      </div>
+                    </div>
+                    <button className="btn-pink" onClick={() => setPendingAction({ type: 'RESET' })}>
+                      {loc('close_shift', lang)}
+                    </button>
+                  </div>
+
+                  <div className="sub-tabs">
+                    <button
+                      className={`sub-tab-btn ${statsTab === 0 ? 'active' : ''}`}
+                      onClick={() => setStatsTab(0)}
+                    >
+                      <Icon name="receipt" size={18} />
+                      <span>{loc('journal', lang)}</span>
+                    </button>
+                    <button
+                      className={`sub-tab-btn ${statsTab === 1 ? 'active' : ''}`}
+                      onClick={() => setStatsTab(1)}
+                    >
+                      <Icon name="trending" size={18} />
+                      <span>{loc('charts', lang)}</span>
+                    </button>
+                    <button
+                      className={`sub-tab-btn ${statsTab === 2 ? 'active' : ''}`}
+                      onClick={() => setStatsTab(2)}
+                    >
+                      <Icon name="history" size={18} />
+                      <span>{loc('reports', lang)}</span>
+                    </button>
+                  </div>
+
+                  {statsTab === 0 && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                      {transactions.filter(tx => (tx.total_amount || 0) > 0).length === 0 ? (
+                        <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-secondary)' }}>
+                          {loc('no_records', lang)}
+                        </div>
+                      ) : (
+                        transactions.filter(tx => (tx.total_amount || 0) > 0).map(tx => (
+                          <div key={tx.id} className="cart-card" style={{ display: 'block' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                              <div>
+                                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                                  {new Date(tx.timestamp || Date.now()).toLocaleDateString('ru-RU')}
+                                </div>
+                                <div style={{ fontSize: '1rem', fontWeight: 800 }}>
+                                  {new Date(tx.timestamp || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                                </div>
+                              </div>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <span style={{ fontSize: '1.25rem', fontWeight: 900, color: 'var(--neon-cyan)' }}>
+                                  {tx.total_amount} ₸
+                                </span>
+                                <button
+                                  onClick={() => setPendingAction({ type: 'DEL_TX', tx })}
+                                  style={{ background: 'none', border: 'none', color: 'var(--neon-pink)', cursor: 'pointer' }}
+                                >
+                                  <Icon name="trash" size={18} />
+                                </button>
+                              </div>
+                            </div>
+                            <div style={{ borderTop: '1px solid rgba(139, 148, 158, 0.2)', paddingTop: '8px' }}>
+                              {(tx.items || []).filter(item => !item.title.startsWith('ОПЛАТА:')).map((item, idx) => (
+                                <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '4px' }}>
+                                  <span style={{ color: 'var(--text-secondary)' }}>• {item.title}</span>
+                                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                    <span style={{ fontWeight: 700 }}>{item.price} ₸</span>
+                                    <button
+                                      onClick={() => setPendingAction({ type: 'DEL_ITEM', txId: tx.id, idx })}
+                                      style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}
+                                    >
+                                      <Icon name="close" size={14} />
+                                    </button>
+                                  </div>
+                                </div>
+                              ))}
+                              {(tx.items || []).filter(item => item.title.startsWith('ОПЛАТА:')).map((item, idx) => (
+                                <div key={'pay_'+idx} style={{ marginTop: '8px', fontSize: '0.75rem', color: 'var(--neon-purple)', fontWeight: 800, textTransform: 'uppercase' }}>
+                                  {item.title}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  )}
+
+                  {statsTab === 1 && (() => {
+                    // Filter transactions + reports by period
+                    // 'shift' = current shift only (transactions table, not daily_reports)
+                    // Other periods combine current + historical data
+                    const now2 = new Date();
+                    let filtered;
+                    if (analyticsPeriod === 'shift') {
+                      // Current shift = only live transactions (from last shift close to now)
+                      filtered = [...transactions];
+                    } else {
+                      const periodStart = analyticsPeriod === 'week' ? new Date(now2.getTime() - 7 * 86400000)
+                        : analyticsPeriod === 'month' ? new Date(now2.getTime() - 30 * 86400000)
+                        : new Date(0);
+                      const allTx = [...transactions, ...(dailyReports.flatMap(r => (r.transactions || []).map(t => ({...t, timestamp: t.timestamp || r.date}))))];
+                      filtered = allTx.filter(t => new Date(t.timestamp || 0) >= periodStart);
+                    }
+
+                    const totalRev = filtered.reduce((a, t) => a + (t.total_amount || 0), 0);
+                    const totalCost = filtered.reduce((a, t) => a + (t.total_cost || 0), 0);
+                    const totalProfit = totalRev - totalCost;
+                    const avgCheck = filtered.length > 0 ? Math.round(totalRev / filtered.length) : 0;
+
+                    // Revenue by day (bar chart)
+                    const revenueByDay = {};
+                    filtered.forEach(t => {
+                      const d = new Date(t.timestamp || 0).toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' });
+                      revenueByDay[d] = (revenueByDay[d] || 0) + (t.total_amount || 0);
+                    });
+                    const dayLabels = Object.keys(revenueByDay).slice(-14);
+                    const dayValues = dayLabels.map(d => revenueByDay[d]);
+                    const maxDayVal = Math.max(...dayValues, 1);
+
+                    // Peak hours
+                    const hourCounts = new Array(24).fill(0);
+                    filtered.forEach(t => {
+                      const h = new Date(t.timestamp || 0).getHours();
+                      hourCounts[h]++;
+                    });
+                    const maxHourCount = Math.max(...hourCounts, 1);
+
+                    // Top bar items
+                    const itemSales = {};
+                    filtered.forEach(t => {
+                      (t.items || []).forEach(item => {
+                        if (item.title && item.title.startsWith('БАР:')) {
+                          const name = item.title.replace('БАР: ', '').replace(/ x\d+$/, '');
+                          itemSales[name] = (itemSales[name] || 0) + (item.price || 0);
+                        }
+                      });
+                    });
+                    const topItems = Object.entries(itemSales).sort((a, b) => b[1] - a[1]).slice(0, 8);
+                    const maxItemVal = topItems.length > 0 ? topItems[0][1] : 1;
+
+                    // Console vs Bar vs Rental revenue
+                    let consoleRev = 0, barRev = 0, rentalRev = 0;
+                    filtered.forEach(t => {
+                      (t.items || []).forEach(item => {
+                        if (item.title && item.title.startsWith('БАР:')) barRev += (item.price || 0);
+                        else if (item.title && item.title.startsWith('АРЕНДА:')) rentalRev += (item.price || 0);
+                        else consoleRev += (item.price || 0);
+                      });
+                    });
+                    const pieTotal = consoleRev + barRev + rentalRev || 1;
+                    const consolePct = Math.round((consoleRev / pieTotal) * 100);
+                    const barPct = Math.round((barRev / pieTotal) * 100);
+                    const rentalPct = 100 - consolePct - barPct;
+
+                    // Download CSV
+                    const downloadCSV = () => {
+                      const BOM = '\uFEFF';
+                      let csv = BOM + 'Дата,Время,Сумма,Себестоимость,Прибыль,Позиции\n';
+                      filtered.forEach(t => {
+                        const dt = new Date(t.timestamp || 0);
+                        const date = dt.toLocaleDateString('ru-RU');
+                        const time = dt.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+                        const items = (t.items || []).map(i => i.title).join('; ');
+                        csv += `${date},${time},${t.total_amount || 0},${t.total_cost || 0},${(t.total_amount || 0) - (t.total_cost || 0)},"${items}"\n`;
+                      });
+                      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement('a');
+                      a.href = url;
+                      a.download = `vitsa_analytics_${new Date().toISOString().slice(0,10)}.csv`;
+                      a.click();
+                      URL.revokeObjectURL(url);
+                      showToastMsg(loc('report_downloaded', lang));
+                    };
+
+                    return (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                      {/* Period Filter */}
+                      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
+                        {['shift', 'week', 'month', 'all'].map(p => (
+                          <button key={p} className={`chip ${analyticsPeriod === p ? 'active' : ''}`}
+                            onClick={() => setAnalyticsPeriod(p)}>
+                            {loc(p === 'all' ? 'all_time' : p, lang)}
+                          </button>
+                        ))}
+                        <button className="action-btn" onClick={downloadCSV} style={{ marginLeft: 'auto', gap: '6px', display: 'flex', alignItems: 'center' }}>
+                          <Icon name="download" size={16} />
+                          <span style={{ fontSize: '0.8rem' }}>CSV</span>
+                        </button>
+                      </div>
+
+                      {filtered.length === 0 ? (
+                        <div style={{ textAlign: 'center', padding: '60px 20px', color: 'var(--text-secondary)' }}>
+                          <Icon name="pie" size={48} color="var(--text-muted)" />
+                          <div style={{ marginTop: '12px', fontSize: '1rem' }}>{loc('no_analytics_data', lang)}</div>
+                        </div>
+                      ) : (
+                        <>
+                      {/* KPI Cards */}
+                      <div className="analytics-kpi-grid">
+                        <div className="analytics-kpi-card">
+                          <div className="kpi-icon" style={{ background: 'rgba(0,255,255,0.12)' }}><Icon name="dollar" size={22} color="var(--neon-cyan)" /></div>
+                          <div className="kpi-label">{loc('revenue', lang)}</div>
+                          <div className="kpi-value" style={{ color: 'var(--neon-cyan)' }}>{totalRev.toLocaleString()} ₸</div>
+                        </div>
+                        <div className="analytics-kpi-card">
+                          <div className="kpi-icon" style={{ background: 'rgba(0,255,0,0.1)' }}><Icon name="trending" size={22} color="#00FF88" /></div>
+                          <div className="kpi-label">{loc('profit', lang)}</div>
+                          <div className="kpi-value" style={{ color: '#00FF88' }}>{totalProfit.toLocaleString()} ₸</div>
+                        </div>
+                        <div className="analytics-kpi-card">
+                          <div className="kpi-icon" style={{ background: 'rgba(255,0,255,0.1)' }}><Icon name="receipt" size={22} color="var(--neon-pink)" /></div>
+                          <div className="kpi-label">{loc('total_transactions', lang)}</div>
+                          <div className="kpi-value" style={{ color: 'var(--neon-pink)' }}>{filtered.length}</div>
+                        </div>
+                        <div className="analytics-kpi-card">
+                          <div className="kpi-icon" style={{ background: 'rgba(191,0,255,0.1)' }}><Icon name="bar-chart" size={22} color="var(--neon-purple)" /></div>
+                          <div className="kpi-label">{loc('avg_check', lang)}</div>
+                          <div className="kpi-value" style={{ color: 'var(--neon-purple)' }}>{avgCheck.toLocaleString()} ₸</div>
+                        </div>
+                      </div>
+
+                      {/* Revenue Bar Chart */}
+                      {dayLabels.length > 0 && (
+                      <div className="analytics-chart-card">
+                        <div className="chart-header">
+                          <Icon name="bar-chart" size={20} color="var(--neon-cyan)" />
+                          <span>{loc('revenue_chart', lang)}</span>
+                        </div>
+                        <div className="bar-chart-container">
+                          {dayLabels.map((label, idx) => (
+                            <div key={idx} className="bar-chart-col">
+                              <div className="bar-chart-value">{(dayValues[idx] / 1000).toFixed(0)}k</div>
+                              <div className="bar-chart-bar-wrap">
+                                <div className="bar-chart-bar" style={{
+                                  height: `${Math.max(4, (dayValues[idx] / maxDayVal) * 100)}%`,
+                                  background: `linear-gradient(180deg, var(--neon-cyan), rgba(0,255,255,0.3))`
+                                }} />
+                              </div>
+                              <div className="bar-chart-label">{label}</div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      )}
+
+                      {/* Two Column Layout: Pie + Peak Hours */}
+                      <div className="analytics-two-col">
+                        {/* Pie Chart - Console vs Bar */}
+                        <div className="analytics-chart-card">
+                          <div className="chart-header">
+                            <Icon name="pie" size={20} color="var(--neon-pink)" />
+                            <span>{loc('console_revenue', lang)}</span>
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '24px', padding: '16px 0' }}>
+                            <div className="css-pie" style={{
+                              background: `conic-gradient(var(--neon-cyan) 0% ${consolePct}%, var(--neon-pink) ${consolePct}% 100%)`
+                            }}>
+                              <div className="css-pie-inner">
+                                <span style={{ fontSize: '1.1rem', fontWeight: 900, color: '#fff' }}>{totalRev > 0 ? `${(totalRev/1000).toFixed(0)}k` : '0'}</span>
+                              </div>
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <div style={{ width: 12, height: 12, borderRadius: 3, background: 'var(--neon-cyan)' }} />
+                                <span style={{ fontSize: '0.85rem' }}>{loc('console_sales', lang)}: <b style={{ color: 'var(--neon-cyan)' }}>{consolePct}%</b></span>
+                              </div>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <div style={{ width: 12, height: 12, borderRadius: 3, background: 'var(--neon-pink)' }} />
+                                <span style={{ fontSize: '0.85rem' }}>{loc('bar_sales', lang)}: <b style={{ color: 'var(--neon-pink)' }}>{barPct}%</b></span>
+                              </div>
+                              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
+                                {loc('costs', lang)}: {totalCost.toLocaleString()} ₸
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Peak Hours */}
+                        <div className="analytics-chart-card">
+                          <div className="chart-header">
+                            <Icon name="clock" size={20} color="var(--neon-purple)" />
+                            <span>{loc('peak_hours_chart', lang)}</span>
+                          </div>
+                          <div className="peak-hours-grid">
+                            {hourCounts.map((count, h) => {
+                              if (h < 8 || h > 23) return null;
+                              const intensity = count / maxHourCount;
+                              return (
+                                <div key={h} className="peak-hour-cell" style={{
+                                  background: count > 0 ? `rgba(191, 0, 255, ${Math.max(0.15, intensity * 0.9)})` : 'rgba(255,255,255,0.03)',
+                                  border: count > 0 ? `1px solid rgba(191, 0, 255, ${intensity * 0.6})` : '1px solid rgba(255,255,255,0.05)'
+                                }}>
+                                  <div className="peak-hour-time">{h}:00</div>
+                                  <div className="peak-hour-count" style={{ color: intensity > 0.5 ? 'var(--neon-pink)' : 'var(--text-secondary)' }}>{count}</div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Top Bar Items */}
+                      {topItems.length > 0 && (
+                      <div className="analytics-chart-card">
+                        <div className="chart-header">
+                          <Icon name="coffee" size={20} color="#FFD700" />
+                          <span>{loc('top_bar_items', lang)}</span>
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', padding: '8px 0' }}>
+                          {topItems.map(([name, revenue], idx) => (
+                            <div key={name} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                              <span style={{ width: '22px', textAlign: 'center', fontWeight: 900, fontSize: '0.85rem', color: idx < 3 ? '#FFD700' : 'var(--text-secondary)' }}>{idx + 1}</span>
+                              <div style={{ flex: 1 }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                                  <span style={{ fontSize: '0.9rem', fontWeight: 700 }}>{name}</span>
+                                  <span style={{ fontSize: '0.9rem', fontWeight: 800, color: 'var(--neon-cyan)' }}>{revenue.toLocaleString()} ₸</span>
+                                </div>
+                                <div style={{ height: '6px', background: 'rgba(255,255,255,0.06)', borderRadius: '3px', overflow: 'hidden' }}>
+                                  <div style={{ height: '100%', width: `${(revenue / maxItemVal) * 100}%`, background: idx < 3 ? 'linear-gradient(90deg, #FFD700, #FFA500)' : 'linear-gradient(90deg, var(--neon-cyan), rgba(0,255,255,0.3))', borderRadius: '3px', transition: 'width 0.5s ease' }} />
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      )}
+                        </>
+                      )}
+                    </div>
+                    );
+                  })()}
+
+                  {statsTab === 2 && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                      {dailyReports.length === 0 ? (
+                        <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-secondary)' }}>
+                          {loc('no_data', lang)}
+                        </div>
+                      ) : (
+                        dailyReports.map(r => {
+                          const txCount = (r.transactions || []).length;
+                          const totalCostR = (r.transactions || []).reduce((a, t) => a + (t.total_cost || 0), 0);
+                          const profitR = (r.amount || 0) - totalCostR;
+                          return (
+                          <div key={r.id} className="report-card" onClick={() => setReportDetailModal(r)}>
+                            <div className="report-card-top">
+                              <div>
+                                <div style={{ fontWeight: 800, fontSize: '1.15rem' }}>
+                                  {new Date(r.date || Date.now()).toLocaleDateString('ru-RU')}
+                                </div>
+                                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                                  {new Date(r.date || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                  {' · '}{txCount} {loc('total_transactions', lang).toLowerCase()}
+                                  {r.closed_by && <span style={{ color: 'var(--neon-cyan)', marginLeft: '8px' }}>👤 {r.closed_by}</span>}
+                                </div>
+                              </div>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <div style={{ textAlign: 'right' }}>
+                                  <div style={{ fontSize: '1.3rem', fontWeight: 900, color: 'var(--neon-cyan)' }}>{(r.amount || 0).toLocaleString()} ₸</div>
+                                  <div style={{ fontSize: '0.75rem', color: '#00FF88', fontWeight: 700 }}>+{profitR.toLocaleString()} ₸ {loc('profit', lang).toLowerCase()}</div>
+                                </div>
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); setPendingAction({ type: 'DEL_REP', report: r }); }}
+                                  style={{ background: 'none', border: 'none', color: 'var(--neon-pink)', cursor: 'pointer' }}
+                                >
+                                  <Icon name="trash" size={18} />
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                          );
+                        })
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+            </main>
+
+            {/* Session Modal */}
+            {selectedConsole && (
+              <div className="modal-overlay" onClick={() => setSelectedConsoleId(null)}>
+                <div className="modal-content" onClick={e => e.stopPropagation()}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div className="modal-title">
+                      {selectedConsole.type === 'VIP' ? `${loc('vip', lang)} ${selectedConsole.name}` : `${loc('common', lang)} ${selectedConsole.name}`}
+                    </div>
+                    <button onClick={() => setSelectedConsoleId(null)} style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer' }}>
+                      <Icon name="close" size={24} />
+                    </button>
+                  </div>
+
+                  {selectedConsole.status === 'FREE' && (
+                    <div>
+                      <div className="modal-subtitle" style={{ marginBottom: '12px' }}>{loc('select_session', lang)}</div>
+
+                      <button
+                        className="packet-btn"
+                        onClick={() => {
+                          const rate = selectedConsole.type === 'VIP' ? 2500 : 1500;
+                          addToCart({ kind: 'session', consoleId: selectedConsole.id, consoleName: selectedConsole.name, durationMinutes: 60, fixedPrice: rate, packageName: '1 HOUR', title: `${selectedConsole.name}: 1 HOUR`, price: rate });
+                          setSelectedConsoleId(null);
+                        }}
+                      >
+                        <span>1 {lang === 'RU' ? 'ЧАС' : 'САҒАТ'}</span>
+                        <span style={{ color: 'var(--neon-cyan)', fontWeight: 800 }}>
+                          {selectedConsole.type === 'VIP' ? 2500 : 1500} ₸
+                        </span>
+                      </button>
+
+                      <button
+                        className="packet-btn"
+                        onClick={() => {
+                          addToCart({ kind: 'session', consoleId: selectedConsole.id, consoleName: selectedConsole.name, durationMinutes: null, fixedPrice: null, packageName: null, title: `${selectedConsole.name}: ${loc('until_stop', lang)}`, price: 0 });
+                          setSelectedConsoleId(null);
+                        }}
+                      >
+                        <span>{loc('until_stop', lang)}</span>
+                        <span style={{ color: 'var(--neon-cyan)', fontWeight: 800 }}>{loc('by_rate', lang)}</span>
+                      </button>
+
+                      <div style={{ color: 'var(--neon-pink)', fontSize: '0.8rem', fontWeight: 800, margin: '14px 0 8px 0' }}>
+                        {loc('packets', lang)}
+                      </div>
+
+                      {selectedConsole.type !== 'VIP' ? (
+                        <>
+                          <button className="packet-btn" onClick={() => { addToCart({ kind: 'session', consoleId: selectedConsole.id, consoleName: selectedConsole.name, durationMinutes: 180, fixedPrice: 3000, packageName: '2 + 1', title: `${selectedConsole.name}: 2+1`, price: 3000 }); setSelectedConsoleId(null); }}>
+                            <span>ПАКЕТ «2 + 1» (3h)</span><span style={{ color: 'var(--neon-cyan)', fontWeight: 800 }}>3000 ₸</span>
+                          </button>
+                          <button className="packet-btn" onClick={() => { addToCart({ kind: 'session', consoleId: selectedConsole.id, consoleName: selectedConsole.name, durationMinutes: 300, fixedPrice: 4500, packageName: '5 HOURS', title: `${selectedConsole.name}: 5 HOURS`, price: 4500 }); setSelectedConsoleId(null); }}>
+                            <span>ПАКЕТ «5 HOURS»</span><span style={{ color: 'var(--neon-cyan)', fontWeight: 800 }}>4500 ₸</span>
+                          </button>
+                          <button className="packet-btn" onClick={() => { addToCart({ kind: 'session', consoleId: selectedConsole.id, consoleName: selectedConsole.name, durationMinutes: 540, fixedPrice: 4000, packageName: 'НОЧЬ', title: `${selectedConsole.name}: NIGHT`, price: 4000 }); setSelectedConsoleId(null); }}>
+                            <span>ПАКЕТ «NIGHT»</span><span style={{ color: 'var(--neon-cyan)', fontWeight: 800 }}>4000 ₸</span>
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <button className="packet-btn" onClick={() => { addToCart({ kind: 'session', consoleId: selectedConsole.id, consoleName: selectedConsole.name, durationMinutes: 180, fixedPrice: 3500, packageName: 'HAPPY HOURS', title: `${selectedConsole.name}: HAPPY HOURS`, price: 3500 }); setSelectedConsoleId(null); }}>
+                            <span>HAPPY HOURS (3h)</span><span style={{ color: 'var(--neon-pink)', fontWeight: 800 }}>3500 ₸</span>
+                          </button>
+                          <button className="packet-btn" onClick={() => { addToCart({ kind: 'session', consoleId: selectedConsole.id, consoleName: selectedConsole.name, durationMinutes: 180, fixedPrice: 5000, packageName: '3 HOURS', title: `${selectedConsole.name}: 3 HOURS`, price: 5000 }); setSelectedConsoleId(null); }}>
+                            <span>ПАКЕТ «3 HOURS»</span><span style={{ color: 'var(--neon-pink)', fontWeight: 800 }}>5000 ₸</span>
+                          </button>
+                          <button className="packet-btn" onClick={() => { addToCart({ kind: 'session', consoleId: selectedConsole.id, consoleName: selectedConsole.name, durationMinutes: 300, fixedPrice: 7500, packageName: '3 + 2', title: `${selectedConsole.name}: 3+2`, price: 7500 }); setSelectedConsoleId(null); }}>
+                            <span>ПАКЕТ «3 + 2» (5h)</span><span style={{ color: 'var(--neon-pink)', fontWeight: 800 }}>7500 ₸</span>
+                          </button>
+                          <button className="packet-btn" onClick={() => { addToCart({ kind: 'session', consoleId: selectedConsole.id, consoleName: selectedConsole.name, durationMinutes: 540, fixedPrice: 7000, packageName: 'NIGHT VIP', title: `${selectedConsole.name}: NIGHT VIP`, price: 7000 }); setSelectedConsoleId(null); }}>
+                            <span>ПАКЕТ «NIGHT VIP»</span><span style={{ color: 'var(--neon-pink)', fontWeight: 800 }}>7000 ₸</span>
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  )}
+
+                  {selectedConsole.status === 'BUSY' && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                      <button
+                        className="packet-btn"
+                        style={{ border: '1px solid var(--neon-pink)', color: '#fff' }}
+                        onClick={async () => {
+                          const c = selectedConsole;
+                          if (c && c.current_session) {
+                            const extras = [...(c.current_session.extras || []), { name: `БАР: ${loc('own_food', lang)}`, price: 1000, cost_price: 0 }];
+                            await supabase.from('consoles').update({
+                              current_session: { ...c.current_session, extras }
+                            }).eq('id', c.id);
+                            showToastMsg('Добавлено в счет консоли (+1000 ₸)');
+                            fetchConsoles();
+                          }
+                        }}
+                      >
+                        <span>🍕 {loc('add_own_food', lang)}</span>
+                        <span style={{ color: 'var(--neon-pink)', fontWeight: 800 }}>1 000 ₸</span>
+                      </button>
+
+                      {selectedConsole.current_session && selectedConsole.current_session.end_time && (
+                        <div style={{ padding: '12px', background: 'rgba(255,255,255,0.05)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                          <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '8px', fontWeight: 600 }}>ИЗМЕНИТЬ ВРЕМЯ (±):</div>
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
+                            <button className="action-btn" onClick={() => addTimeToSession(selectedConsole.id, 15)}>+15 мин</button>
+                            <button className="action-btn" onClick={() => addTimeToSession(selectedConsole.id, 30)}>+30 мин</button>
+                            <button className="action-btn" onClick={() => addTimeToSession(selectedConsole.id, 60)}>+1 час</button>
+                            <button className="action-btn" onClick={() => addTimeToSession(selectedConsole.id, -15)} style={{ color: 'var(--neon-pink)', borderColor: 'rgba(255,0,255,0.4)' }}>-15 мин</button>
+                            <button className="action-btn" onClick={() => addTimeToSession(selectedConsole.id, -30)} style={{ color: 'var(--neon-pink)', borderColor: 'rgba(255,0,255,0.4)' }}>-30 мин</button>
+                            <button className="action-btn" onClick={() => addTimeToSession(selectedConsole.id, -60)} style={{ color: 'var(--neon-pink)', borderColor: 'rgba(255,0,255,0.4)' }}>-1 час</button>
+                          </div>
+                          <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
+                            <input
+                              type="number"
+                              className="input-field"
+                              placeholder="Свое время (мин)"
+                              value={customTimeInput}
+                              onChange={e => setCustomTimeInput(e.target.value)}
+                              style={{ flex: 1, padding: '8px 12px' }}
+                            />
+                            <button className="action-btn" onClick={() => {
+                              const v = parseInt(customTimeInput);
+                              if (!isNaN(v) && v !== 0) {
+                                addTimeToSession(selectedConsole.id, v);
+                                setCustomTimeInput('');
+                              }
+                            }}>Применить</button>
+                          </div>
+                        </div>
+                      )}
+
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                          <button className="btn-pink" onClick={() => stopSession(selectedConsole.id, 'KASPI')} style={{ flex: 1 }}>
+                            Завершить (Kaspi)
+                          </button>
+                          <button className="btn-pink" onClick={() => stopSession(selectedConsole.id, 'CASH')} style={{ flex: 1, background: 'var(--surface-dark)', color: 'var(--neon-pink)', border: '1px solid var(--neon-pink)' }}>
+                            Завершить (Нал)
+                          </button>
+                        </div>
+                        <button className="btn-pink" onClick={() => stopSession(selectedConsole.id, 'MIXED')} style={{ width: '100%', background: 'var(--surface-dark)', color: '#eab308', border: '1px solid #eab308' }}>
+                          Завершить (Смешанная)
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {selectedConsole.status === 'BOOKED' && (
+                    <div>
+                      <div>{loc('reserved_for', lang)} {selectedConsole.booked_by}</div>
+                      <button className="btn-pink" onClick={() => stopSession(selectedConsole.id)} style={{ marginTop: '12px' }}>
+                        {loc('clear_booking', lang)}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Kaspi QR Modal */}
+            {showQR && (
+              <div className="modal-overlay">
+                <div className="modal-content" style={{ textAlign: 'center' }}>
+                  <h2>{loc('payment_qr', lang)}</h2>
+                  <div className="qr-box">
+                    <img src="./kaspi_qr.jpg" alt="Kaspi QR" />
+                  </div>
+                  <div style={{ fontSize: '2.2rem', color: 'var(--neon-cyan)', fontWeight: 900, margin: '12px 0' }}>
+                    {Math.max(0, cart.reduce((a, c) => a + c.price, 0) - getDiscountAmount(cart.reduce((a, c) => a + c.price, 0))).toLocaleString()} ₸
+                  </div>
+                  <div style={{ fontSize: '0.8rem', color: 'var(--neon-pink)', marginBottom: '16px' }}>
+                    {loc('enter_amount', lang)}
+                  </div>
+                  <button className="btn-primary" onClick={() => { setShowQR(false); checkout('KASPI'); }}>
+                    {loc('i_paid', lang)}
+                  </button>
+                  <button className="btn-secondary" onClick={() => setShowQR(false)} style={{ marginTop: '8px' }}>
+                    {loc('cancel', lang)}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Add Item Modal */}
+            {showAddItem && (
+              <div className="modal-overlay" onClick={() => setShowAddItem(false)}>
+                <form className="modal-content" onClick={e => e.stopPropagation()} onSubmit={handleAddProduct}>
+                  <div className="modal-title">{loc('new_product', lang)}</div>
+                  <input type="text" placeholder={loc('product_name', lang)} value={newName} onChange={e => setNewName(e.target.value)} className="input-field" required />
+                  <input type="text" placeholder={loc('category', lang)} value={newCategory} onChange={e => setNewCategory(e.target.value)} className="input-field" required />
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <input type="number" placeholder={loc('price', lang)} value={newPrice} onChange={e => setNewPrice(e.target.value)} className="input-field" required />
+                    <input type="number" placeholder={loc('cost_price', lang)} value={newCostPrice} onChange={e => setNewCostPrice(e.target.value)} className="input-field" />
+                  </div>
+                  <input type="number" placeholder={loc('stock_count', lang)} value={newStock} onChange={e => setNewStock(e.target.value)} className="input-field" required />
+                  <div style={{ display: 'flex', gap: '10px', marginTop: '12px' }}>
+                    <button type="submit" className="btn-primary" style={{ flex: 1 }}>{loc('add', lang)}</button>
+                    <button type="button" className="btn-secondary" onClick={() => setShowAddItem(false)}>{loc('cancel', lang)}</button>
+                  </div>
+                </form>
+              </div>
+            )}
+
+            {/* Bar Quantity Assignment Modal */}
+            {selectedBarItem && (
+              <div className="modal-overlay" onClick={() => setSelectedBarItem(null)}>
+                <div className="modal-content" onClick={e => e.stopPropagation()}>
+                  <div className="modal-title">{loc('add_to_cart', lang)}: {selectedBarItem.name}</div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 0' }}>
+                    <span>{lang === 'RU' ? 'Количество:' : 'Саны:'}</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <button className="action-btn" onClick={() => setBarQuantity(q => Math.max(1, q - 1))}>-</button>
+                      <span style={{ fontSize: '1.3rem', fontWeight: 800 }}>{barQuantity}</span>
+                      <button className="action-btn" onClick={() => setBarQuantity(q => Math.min(selectedBarItem.stock, q + 1))}>+</button>
+                    </div>
+                  </div>
+                  <button className="btn-primary" onClick={() => {
+                    const tot = selectedBarItem.price * barQuantity;
+                    const qText = barQuantity > 1 ? ` x${barQuantity}` : '';
+                    addToCart({ kind: 'bar', itemId: selectedBarItem.id, quantity: barQuantity, title: `БАР: ${selectedBarItem.name}${qText}`, price: tot });
+                    setSelectedBarItem(null);
+                  }}>
+                    {loc('direct_sale', lang)}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Report Detail Modal */}
+            {reportDetailModal && (
+              <div className="modal-overlay" onClick={() => setReportDetailModal(null)}>
+                <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '600px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div className="modal-title">
+                      {loc('report_details', lang)}: {new Date(reportDetailModal.date || Date.now()).toLocaleDateString('ru-RU')}
+                    </div>
+                    <button onClick={() => setReportDetailModal(null)} style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer' }}>
+                      <Icon name="close" size={24} />
+                    </button>
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                    <div className="analytics-kpi-card" style={{ flex: '1 1 45%' }}>
+                      <div className="kpi-label">{loc('revenue', lang)}</div>
+                      <div className="kpi-value" style={{ color: 'var(--neon-cyan)', fontSize: '1.3rem' }}>{(reportDetailModal.amount || 0).toLocaleString()} ₸</div>
+                    </div>
+                    <div className="analytics-kpi-card" style={{ flex: '1 1 45%' }}>
+                      <div className="kpi-label">{loc('total_transactions', lang)}</div>
+                      <div className="kpi-value" style={{ color: 'var(--neon-pink)', fontSize: '1.3rem' }}>{(reportDetailModal.transactions || []).length}</div>
+                    </div>
+                  </div>
+
+                  {reportDetailModal.closed_by && (
+                    <div style={{ background: 'rgba(0, 255, 255, 0.08)', border: '1px solid rgba(0, 255, 255, 0.3)', borderRadius: '12px', padding: '10px 14px', fontSize: '0.85rem', fontWeight: 700, color: 'var(--neon-cyan)' }}>
+                      👤 {loc('kassa_closed_by', lang)}: {reportDetailModal.closed_by}
+                    </div>
+                  )}
+
+                  <div style={{ maxHeight: '350px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    {(reportDetailModal.transactions || []).map((tx, idx) => (
+                      <div key={idx} className="cart-card" style={{ display: 'block' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
+                          <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                            {new Date(tx.timestamp || 0).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                          <span style={{ fontWeight: 800, color: 'var(--neon-cyan)' }}>{(tx.total_amount || 0).toLocaleString()} ₸</span>
+                        </div>
+                        {(tx.items || []).filter(item => !item.title.startsWith('ОПЛАТА:')).map((item, i) => (
+                          <div key={i} style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', paddingLeft: '8px' }}>• {item.title}: {item.price} ₸</div>
+                        ))}
+                        {(tx.items || []).filter(item => item.title.startsWith('ОПЛАТА:')).map((item, i) => (
+                          <div key={'pay_'+i} style={{ fontSize: '0.75rem', color: 'var(--neon-purple)', fontWeight: 800, marginTop: '4px', textTransform: 'uppercase' }}>
+                            {item.title}
+                          </div>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+
+                  <button className="action-btn" style={{ width: '100%', justifyContent: 'center', gap: '8px' }} onClick={() => {
+                    const BOM = '\uFEFF';
+                    let csv = BOM + `Отчёт за ${new Date(reportDetailModal.date).toLocaleDateString('ru-RU')}\n\n`;
+                    csv += 'Время,Сумма,Себестоимость,Позиции\n';
+                    (reportDetailModal.transactions || []).forEach(tx => {
+                      const time = new Date(tx.timestamp || 0).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+                      const items = (tx.items || []).map(i => i.title).join('; ');
+                      csv += `${time},${tx.total_amount || 0},${tx.total_cost || 0},"${items}"\n`;
+                    });
+                    csv += `\nИТОГО:,${reportDetailModal.amount || 0},,\n`;
+                    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `vitsa_report_${new Date(reportDetailModal.date).toISOString().slice(0,10)}.csv`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    showToastMsg(loc('report_downloaded', lang));
+                  }}>
+                    <Icon name="download" size={18} />
+                    <span>{loc('download_report', lang)}</span>
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Admin Auth Modal */}
+            {pendingAction && (
+              <div className="modal-overlay" onClick={() => setPendingAction(null)}>
+                <div className="modal-content" onClick={e => e.stopPropagation()}>
+                  <div className="modal-title">{loc('enter_admin_password', lang)}</div>
+                  <input
+                    type="password"
+                    value={passInput}
+                    onChange={e => { setPassInput(e.target.value); setPassError(false); }}
+                    className="input-field"
+                    placeholder={loc('password', lang)}
+                    autoFocus
+                  />
+                  {passError && <div style={{ color: 'var(--neon-pink)', fontSize: '0.8rem' }}>{loc('wrong_password', lang)}</div>}
+                  <div style={{ display: 'flex', gap: '10px', marginTop: '12px' }}>
+                    <button className="btn-pink" style={{ flex: 1 }} onClick={handleAdminAuth}>OK</button>
+                    <button className="btn-secondary" onClick={() => setPendingAction(null)}>{loc('cancel', lang)}</button>
+                  </div>
+                </div>
+              </div>
+            )}
+            </>
+            )}
+          </div>
+        );
+      }
+
+      ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    </script>
+  </body>
+</html>
