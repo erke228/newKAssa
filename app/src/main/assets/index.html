@@ -1566,7 +1566,7 @@
                       const periodStart = analyticsPeriod === 'week' ? new Date(now2.getTime() - 7 * 86400000)
                         : analyticsPeriod === 'month' ? new Date(now2.getTime() - 30 * 86400000)
                         : new Date(0);
-                      const allTx = [...transactions, ...(dailyReports.flatMap(r => (r.transactions || []).map(t => ({...t, timestamp: t.timestamp || r.date}))))];
+                      const allTx = [...transactions, ...(dailyReports.flatMap(r => (r.transactions || []).map(t => ({...t, timestamp: r.date || t.timestamp}))))];
                       filtered = allTx.filter(t => new Date(t.timestamp || 0) >= periodStart);
                     }
 
@@ -1581,7 +1581,12 @@
                       const d = new Date(t.timestamp || 0).toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' });
                       revenueByDay[d] = (revenueByDay[d] || 0) + (t.total_amount || 0);
                     });
-                    const dayLabels = Object.keys(revenueByDay).slice(-14);
+                    const dayLabels = Object.keys(revenueByDay).sort((a, b) => {
+                      const [d1, m1] = a.split('.').map(Number);
+                      const [d2, m2] = b.split('.').map(Number);
+                      if (m1 !== m2) return m1 - m2;
+                      return d1 - d2;
+                    }).slice(-14);
                     const dayValues = dayLabels.map(d => revenueByDay[d]);
                     const maxDayVal = Math.max(...dayValues, 1);
 
