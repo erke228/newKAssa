@@ -337,7 +337,7 @@
         // Stats Subtab
         const [statsTab, setStatsTab] = useState(0);
         // Analytics Period Filter
-        const [analyticsPeriod, setAnalyticsPeriod] = useState('shift');
+        const [analyticsPeriod, setAnalyticsPeriod] = useState('all');
         // Report Detail Modal
         const [reportDetailModal, setReportDetailModal] = useState(null);
 
@@ -1757,7 +1757,6 @@
                           </div>
                           <div className="peak-hours-grid">
                             {hourCounts.map((count, h) => {
-                              if (h < 8 || h > 23) return null;
                               const intensity = count / maxHourCount;
                               return (
                                 <div key={h} className="peak-hour-cell" style={{
