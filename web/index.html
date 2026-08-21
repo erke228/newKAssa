@@ -242,7 +242,7 @@
           no_data: 'Данных пока нет', report_details: 'Детали отчета', shift_total: 'Итого за смену', no_records: 'Нет записей',
           analytics: 'АНАЛИТИКА', shift: 'Смена', today: 'Сегодня', week: 'Неделя', month: 'Месяц', all_time: 'Всё время',
           revenue_chart: 'Выручка по дням', top_bar_items: 'Топ продаж бара', peak_hours_chart: 'Пиковые часы',
-          console_revenue: 'Доход по консолям', total_transactions: 'Транзакций', avg_check: 'Средний чек',
+          console_revenue: 'Структура выручки', total_transactions: 'Транзакций', avg_check: 'Средний чек',
           profit: 'Прибыль', costs: 'Себестоимость', download_csv: 'Скачать CSV', download_report: 'Скачать отчёт',
           bar_sales: 'Продажи бара', console_sales: 'Продажи консолей', items_sold: 'Продано шт.',
           no_analytics_data: 'Нет данных за выбранный период', report_downloaded: 'Отчёт скачан!',
@@ -279,7 +279,7 @@
           no_data: 'Әзірге деректер жоқ', report_details: 'Есеп мәліметтері', shift_total: 'Ауысым қорытындысы', no_records: 'Жазбалар жоқ',
           analytics: 'АНАЛИТИКА', shift: 'Ауысым', today: 'Бүгін', week: 'Апта', month: 'Ай', all_time: 'Барлық уақыт',
           revenue_chart: 'Күндер бойынша табыс', top_bar_items: 'Бар сатылымы топ', peak_hours_chart: 'Ең көп келетін уақыт',
-          console_revenue: 'Консольдер бойынша табыс', total_transactions: 'Транзакциялар', avg_check: 'Орташа чек',
+          console_revenue: 'Табыс құрылымы', total_transactions: 'Транзакциялар', avg_check: 'Орташа чек',
           profit: 'Пайда', costs: 'Өзіндік құн', download_csv: 'CSV жүктеу', download_report: 'Есепті жүктеу',
           bar_sales: 'Бар сатылымы', console_sales: 'Консоль сатылымы', items_sold: 'Сатылды дана',
           no_analytics_data: 'Таңдалған кезеңде деректер жоқ', report_downloaded: 'Есеп жүктелді!',
@@ -338,6 +338,8 @@
         const [statsTab, setStatsTab] = useState(0);
         // Analytics Period Filter
         const [analyticsPeriod, setAnalyticsPeriod] = useState('all');
+        const [mobileAnalyticsTab, setMobileAnalyticsTab] = useState(0);
+        const [shopTab, setShopTab] = useState(0);
         // Report Detail Modal
         const [reportDetailModal, setReportDetailModal] = useState(null);
 
@@ -912,9 +914,7 @@
             <nav className="desktop-nav">
               {[
                 { id: 0, label: loc('consoles', lang), icon: 'gamepad' },
-                { id: 1, label: loc('bar', lang), icon: 'coffee' },
-                { id: 5, label: loc('hookah', lang), icon: 'smoke' },
-                { id: 4, label: loc('rent', lang), icon: 'tv' },
+                { id: 1, label: lang === 'RU' ? 'Магазин' : 'Дүкен', icon: 'coffee' },
                 { id: 3, label: loc('cart', lang), icon: 'cart', badge: cart.length },
                 { id: 2, label: loc('stats', lang), icon: 'stats' }
               ].map(t => (
@@ -934,9 +934,7 @@
             <nav className="mobile-nav">
               {[
                 { id: 0, label: loc('consoles', lang), icon: 'gamepad' },
-                { id: 1, label: loc('bar', lang), icon: 'coffee' },
-                { id: 5, label: loc('hookah', lang), icon: 'smoke' },
-                { id: 4, label: loc('rent', lang), icon: 'tv' },
+                { id: 1, label: lang === 'RU' ? 'Магазин' : 'Дүкен', icon: 'coffee' },
                 { id: 3, label: loc('cart', lang), icon: 'cart', badge: cart.length },
                 { id: 2, label: loc('stats', lang), icon: 'stats' }
               ].map(t => (
@@ -1013,9 +1011,23 @@
                 </div>
               )}
 
-              {/* Tab 1: Bar */}
+              {/* Tab 1: Shop (Bar, Hookah, Rent) */}
               {activeTab === 1 && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <div>
+                  <div className="sub-tabs" style={{ marginBottom: '16px' }}>
+                    <button className={`sub-tab-btn ${shopTab === 0 ? 'active' : ''}`} onClick={() => setShopTab(0)}>
+                      <Icon name="coffee" size={18} /><span>{loc('bar', lang)}</span>
+                    </button>
+                    <button className={`sub-tab-btn ${shopTab === 1 ? 'active' : ''}`} onClick={() => setShopTab(1)}>
+                      <Icon name="smoke" size={18} /><span>{loc('hookah', lang)}</span>
+                    </button>
+                    <button className={`sub-tab-btn ${shopTab === 2 ? 'active' : ''}`} onClick={() => setShopTab(2)}>
+                      <Icon name="tv" size={18} /><span>{loc('rent', lang)}</span>
+                    </button>
+                  </div>
+                  
+                  {shopTab === 0 && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--neon-cyan)' }}>
                       {loc('bar_and_snacks', lang)}
@@ -1115,102 +1127,65 @@
                       </div>
                     ))}
                   </div>
-                </div>
-              )}
-
-              {/* Tab 4: Rental */}
-              {activeTab === 4 && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <h2 style={{ fontSize: '1.6rem', fontWeight: 900, color: 'var(--neon-cyan)' }}>
-                      {loc('rent', lang).toUpperCase()}
-                    </h2>
                   </div>
+                )}
 
-                  {/* Rental Grid */}
-                  <div className="rental-grid">
-                    {/* Card 1: PS Rental */}
-                    <div className="rental-card">
-                      <div className="rental-card-header">
-                        <div className="rental-icon-wrap cyan">
-                          <Icon name="tv" size={32} color="var(--neon-cyan)" />
-                        </div>
-                        <div>
-                          <div className="rental-title">{loc('ps_rental', lang)}</div>
-                          <div className="rental-price-tag">7 000 ₸ {loc('per_day', lang)}</div>
-                        </div>
+                {/* Shop Tab 2: Rental */}
+                {shopTab === 2 && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <h2 style={{ fontSize: '1.6rem', fontWeight: 900, color: 'var(--neon-cyan)' }}>
+                        {loc('rent', lang).toUpperCase()}
+                      </h2>
+                    </div>
+
+                  <div>
+                    {/* Item 1: PS Rental */}
+                    <div className="bar-item-card">
+                      <div>
+                        <div style={{ fontWeight: 700, fontSize: '1rem' }}>{loc('ps_rental', lang)}</div>
+                        <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>7000 ₸ {loc('per_day', lang)}</div>
                       </div>
-
-                      <div className="rental-counter-row">
-                        <span>{loc('days_count', lang)}:</span>
-                        <div className="counter-controls">
-                          <button className="action-btn" onClick={() => setPsDays(d => Math.max(1, d - 1))}>-</button>
-                          <span className="counter-val">{psDays}</span>
-                          <button className="action-btn" onClick={() => setPsDays(d => d + 1)}>+</button>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <button className="action-btn" style={{ padding: '4px 8px' }} onClick={() => setPsDays(d => Math.max(1, d - 1))}>-</button>
+                          <span style={{ fontWeight: 900, minWidth: '20px', textAlign: 'center' }}>{psDays}</span>
+                          <button className="action-btn" style={{ padding: '4px 8px' }} onClick={() => setPsDays(d => d + 1)}>+</button>
                         </div>
-                      </div>
-
-                      <div className="rental-total-row">
-                        <span>{loc('total', lang)}:</span>
-                        <span className="rental-total-val">{(7000 * psDays).toLocaleString()} ₸</span>
-                      </div>
-
-                      <button
-                        className="btn-primary"
-                        style={{ width: '100%', padding: '12px' }}
-                        onClick={() => {
+                        <button className="btn-primary" style={{ padding: '6px 14px', fontSize: '0.8rem' }} onClick={() => {
                           const tot = 7000 * psDays;
-                          const title = `АРЕНДА: PS (${psDays} сут.)`;
+                          const title = "АРЕНДА: PS (" + psDays + " сут.)";
                           addToCart({ kind: 'rental', title, price: tot, days: psDays });
-                        }}
-                      >
-                        <Icon name="cart" size={18} />
-                        {loc('add_to_cart', lang)}
-                      </button>
+                        }}>
+                          {loc('add_to_cart', lang)}
+                        </button>
+                      </div>
                     </div>
 
-                    {/* Card 2: Joystick Rental */}
-                    <div className="rental-card">
-                      <div className="rental-card-header">
-                        <div className="rental-icon-wrap purple">
-                          <Icon name="gamepad" size={32} color="var(--neon-purple)" />
-                        </div>
-                        <div>
-                          <div className="rental-title">{loc('joystick_rental', lang)}</div>
-                          <div className="rental-price-tag">2 000 ₸ {loc('per_pcs', lang)}</div>
-                        </div>
+                    {/* Item 2: Joystick Rental */}
+                    <div className="bar-item-card">
+                      <div>
+                        <div style={{ fontWeight: 700, fontSize: '1rem' }}>{loc('joystick_rental', lang)}</div>
+                        <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>2000 ₸ {loc('per_pcs', lang)}</div>
                       </div>
-
-                      <div className="rental-counter-row">
-                        <span>{loc('pcs_count', lang)}:</span>
-                        <div className="counter-controls">
-                          <button className="action-btn" onClick={() => setJoystickPcs(q => Math.max(1, q - 1))}>-</button>
-                          <span className="counter-val">{joystickPcs}</span>
-                          <button className="action-btn" onClick={() => setJoystickPcs(q => q + 1)}>+</button>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <button className="action-btn" style={{ padding: '4px 8px' }} onClick={() => setJoystickPcs(p => Math.max(1, p - 1))}>-</button>
+                          <span style={{ fontWeight: 900, minWidth: '20px', textAlign: 'center' }}>{joystickPcs}</span>
+                          <button className="action-btn" style={{ padding: '4px 8px' }} onClick={() => setJoystickPcs(p => p + 1)}>+</button>
                         </div>
-                      </div>
-
-                      <div className="rental-total-row">
-                        <span>{loc('total', lang)}:</span>
-                        <span className="rental-total-val" style={{ color: 'var(--neon-purple)' }}>{(2000 * joystickPcs).toLocaleString()} ₸</span>
-                      </div>
-
-                      <button
-                        className="btn-primary"
-                        style={{ width: '100%', padding: '12px', background: 'var(--neon-purple)', color: '#fff' }}
-                        onClick={() => {
+                        <button className="btn-primary" style={{ padding: '6px 14px', fontSize: '0.8rem' }} onClick={() => {
                           const tot = 2000 * joystickPcs;
-                          const title = `АРЕНДА: Джойстик x${joystickPcs}`;
+                          const title = "АРЕНДА: Джойстик x" + joystickPcs;
                           addToCart({ kind: 'rental', title, price: tot, pcs: joystickPcs });
-                        }}
-                      >
-                        <Icon name="cart" size={18} />
-                        {loc('add_to_cart', lang)}
-                      </button>
+                        }}>
+                          {loc('add_to_cart', lang)}
+                        </button>
+                      </div>
                     </div>
                   </div>
 
-                  {/* Preset Quick Bundles */}
+                    {/* Preset Quick Bundles */}
                   <div className="analytics-chart-card">
                     <div className="chart-header">
                       <Icon name="plus" size={20} color="var(--neon-pink)" />
@@ -1236,8 +1211,8 @@
                 </div>
               )}
 
-              {/* Tab 5: Hookah */}
-              {activeTab === 5 && (
+              {/* Shop Tab 1: Hookah */}
+              {shopTab === 1 && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <h2 style={{ fontSize: '1.6rem', fontWeight: 900, color: 'var(--neon-cyan)' }}>
@@ -1245,31 +1220,38 @@
                     </h2>
                   </div>
 
-                  <div className="analytics-chart-card">
-                    <div className="chart-header">
-                      <Icon name="smoke" size={20} color="var(--neon-purple)" />
-                      <span>{loc('hookah_menu', lang)}</span>
-                    </div>
-
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                      {[
-                        { title: loc('hookah_weak', lang), price: 4000 },
-                        { title: loc('hookah_medium', lang), price: 5500 },
-                        { title: loc('hookah_strong', lang), price: 7000 },
-                        { title: loc('hookah_coal', lang), price: 500 }
-                      ].map((item, idx) => (
-                        <div key={idx} className="packet-btn" style={{ margin: 0 }} onClick={() => {
-                          addToCart({ kind: 'rental', title: `БАР: Кальян (${item.title})`, price: item.price });
-                        }}>
-                          <span>{item.title}</span>
-                          <span style={{ color: 'var(--neon-cyan)', fontWeight: 800 }}>{item.price.toLocaleString()} ₸</span>
+                  <div>
+                    {[
+                      { title: loc('hookah_weak', lang), price: 4000 },
+                      { title: loc('hookah_medium', lang), price: 5500 },
+                      { title: loc('hookah_strong', lang), price: 7000 },
+                      { title: loc('hookah_coal', lang), price: 500 }
+                    ].map((item, idx) => (
+                      <div key={idx} className="bar-item-card">
+                        <div>
+                          <div style={{ fontWeight: 700, fontSize: '1rem' }}>{item.title}</div>
                         </div>
-                      ))}
-                    </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                          <span style={{ fontWeight: 800, fontSize: '1.1rem', color: 'var(--neon-cyan)' }}>
+                            {item.price} ₸
+                          </span>
+                          <button
+                            className="btn-primary"
+                            style={{ padding: '6px 14px', fontSize: '0.8rem' }}
+                            onClick={() => {
+                              addToCart({ kind: 'rental', title: `БАР: Кальян (${item.title})`, price: item.price });
+                            }}
+                          >
+                            {loc('add_to_cart', lang)}
+                          </button>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               )}
-
+              </div>
+              )}
               {/* Tab 3: Cart */}
               {activeTab === 3 && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -1611,19 +1593,27 @@
                     const topItems = Object.entries(itemSales).sort((a, b) => b[1] - a[1]).slice(0, 8);
                     const maxItemVal = topItems.length > 0 ? topItems[0][1] : 1;
 
-                    // Console vs Bar vs Rental revenue
-                    let consoleRev = 0, barRev = 0, rentalRev = 0;
+                    // Category Revenue
+                    let commonRev = 0, vipRev = 0, barRev = 0, hookahRev = 0, rentalRev = 0;
                     filtered.forEach(t => {
                       (t.items || []).forEach(item => {
-                        if (item.title && item.title.startsWith('БАР:')) barRev += (item.price || 0);
-                        else if (item.title && item.title.startsWith('АРЕНДА:')) rentalRev += (item.price || 0);
-                        else consoleRev += (item.price || 0);
+                        const title = item.title || '';
+                        const price = item.price || 0;
+                        if (title.startsWith('БАР:')) {
+                           if (title.toLowerCase().includes('кальян')) hookahRev += price;
+                           else barRev += price;
+                        }
+                        else if (title.startsWith('АРЕНДА:')) rentalRev += price;
+                        else if (title.includes('ВИП')) vipRev += price;
+                        else commonRev += price;
                       });
                     });
-                    const pieTotal = consoleRev + barRev + rentalRev || 1;
-                    const consolePct = Math.round((consoleRev / pieTotal) * 100);
+                    const pieTotal = commonRev + vipRev + barRev + hookahRev + rentalRev || 1;
+                    const commonPct = Math.round((commonRev / pieTotal) * 100);
+                    const vipPct = Math.round((vipRev / pieTotal) * 100);
                     const barPct = Math.round((barRev / pieTotal) * 100);
-                    const rentalPct = 100 - consolePct - barPct;
+                    const hookahPct = Math.round((hookahRev / pieTotal) * 100);
+                    const rentalPct = Math.max(0, 100 - commonPct - vipPct - barPct - hookahPct);
 
                     // Download CSV
                     const downloadCSV = () => {
@@ -1668,9 +1658,16 @@
                           <div style={{ marginTop: '12px', fontSize: '1rem' }}>{loc('no_analytics_data', lang)}</div>
                         </div>
                       ) : (
-                        <>
-                      {/* KPI Cards */}
-                      <div className="analytics-kpi-grid">
+                        <div className={`analytics-content mobile-tab-${mobileAnalyticsTab}`}>
+                          <div className="mobile-analytics-tabs sub-tabs">
+                            <button className={`sub-tab-btn ${mobileAnalyticsTab === 0 ? 'active' : ''}`} onClick={() => setMobileAnalyticsTab(0)}>Сводка</button>
+                            <button className={`sub-tab-btn ${mobileAnalyticsTab === 1 ? 'active' : ''}`} onClick={() => setMobileAnalyticsTab(1)}>Детали</button>
+                            <button className={`sub-tab-btn ${mobileAnalyticsTab === 2 ? 'active' : ''}`} onClick={() => setMobileAnalyticsTab(2)}>Бар</button>
+                          </div>
+                          
+                          <div className="analytics-section-kpi" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                            {/* KPI Cards */}
+                            <div className="analytics-kpi-grid">
                         <div className="analytics-kpi-card">
                           <div className="kpi-icon" style={{ background: 'rgba(0,255,255,0.12)' }}><Icon name="dollar" size={22} color="var(--neon-cyan)" /></div>
                           <div className="kpi-label">{loc('revenue', lang)}</div>
@@ -1716,7 +1713,9 @@
                         </div>
                       </div>
                       )}
+                      </div>
 
+                      <div className="analytics-section-charts" style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '12px' }}>
                       {/* Two Column Layout: Pie + Peak Hours */}
                       <div className="analytics-two-col">
                         {/* Pie Chart - Console vs Bar */}
@@ -1726,22 +1725,44 @@
                             <span>{loc('console_revenue', lang)}</span>
                           </div>
                           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '24px', padding: '16px 0' }}>
-                            <div className="css-pie" style={{
-                              background: `conic-gradient(var(--neon-cyan) 0% ${consolePct}%, var(--neon-pink) ${consolePct}% 100%)`
-                            }}>
-                              <div className="css-pie-inner">
-                                <span style={{ fontSize: '1.1rem', fontWeight: 900, color: '#fff' }}>{totalRev > 0 ? `${(totalRev/1000).toFixed(0)}k` : '0'}</span>
-                              </div>
-                            </div>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                            {(() => {
+                              const cp1 = commonPct;
+                              const cp2 = cp1 + vipPct;
+                              const cp3 = cp2 + barPct;
+                              const cp4 = cp3 + hookahPct;
+                              return (
+                                <div className="css-pie" style={{
+                                  background: `conic-gradient(var(--neon-cyan) 0% ${cp1}%, #FFD700 ${cp1}% ${cp2}%, var(--neon-pink) ${cp2}% ${cp3}%, var(--neon-purple) ${cp3}% ${cp4}%, #00FF88 ${cp4}% 100%)`
+                                }}>
+                                  <div className="css-pie-inner">
+                                    <span style={{ fontSize: '1.1rem', fontWeight: 900, color: '#fff' }}>{totalRev > 0 ? `${(totalRev/1000).toFixed(0)}k` : '0'}</span>
+                                  </div>
+                                </div>
+                              );
+                            })()}
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                 <div style={{ width: 12, height: 12, borderRadius: 3, background: 'var(--neon-cyan)' }} />
-                                <span style={{ fontSize: '0.85rem' }}>{loc('console_sales', lang)}: <b style={{ color: 'var(--neon-cyan)' }}>{consolePct}%</b></span>
+                                <span style={{ fontSize: '0.85rem' }}>{loc('common_consoles', lang)}: <b style={{ color: 'var(--neon-cyan)' }}>{commonPct}%</b></span>
+                              </div>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <div style={{ width: 12, height: 12, borderRadius: 3, background: '#FFD700' }} />
+                                <span style={{ fontSize: '0.85rem' }}>{loc('vip_consoles', lang)}: <b style={{ color: '#FFD700' }}>{vipPct}%</b></span>
                               </div>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                                 <div style={{ width: 12, height: 12, borderRadius: 3, background: 'var(--neon-pink)' }} />
                                 <span style={{ fontSize: '0.85rem' }}>{loc('bar_sales', lang)}: <b style={{ color: 'var(--neon-pink)' }}>{barPct}%</b></span>
                               </div>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <div style={{ width: 12, height: 12, borderRadius: 3, background: 'var(--neon-purple)' }} />
+                                <span style={{ fontSize: '0.85rem' }}>Кальян: <b style={{ color: 'var(--neon-purple)' }}>{hookahPct}%</b></span>
+                              </div>
+                              {rentalPct > 0 && (
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                  <div style={{ width: 12, height: 12, borderRadius: 3, background: '#00FF88' }} />
+                                  <span style={{ fontSize: '0.85rem' }}>Аренда: <b style={{ color: '#00FF88' }}>{rentalPct}%</b></span>
+                                </div>
+                              )}
                               <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
                                 {loc('costs', lang)}: {totalCost.toLocaleString()} ₸
                               </div>
@@ -1771,7 +1792,9 @@
                           </div>
                         </div>
                       </div>
+                      </div>
 
+                      <div className="analytics-section-top" style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '12px' }}>
                       {/* Top Bar Items */}
                       {topItems.length > 0 && (
                       <div className="analytics-chart-card">
@@ -1797,7 +1820,8 @@
                         </div>
                       </div>
                       )}
-                        </>
+                      </div>
+                      </div>
                       )}
                     </div>
                     );

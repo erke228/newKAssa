@@ -1102,20 +1102,20 @@ body::after {
 
 /* ========== RENTAL SECTION ========== */
 
-.rental-grid {
+.shop-grid {
   display: grid;
   grid-template-columns: repeat(1, 1fr);
   gap: 16px;
 }
 
 @media (min-width: 768px) {
-  .rental-grid {
-    grid-template-columns: repeat(2, 1fr);
+  .shop-grid {
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 20px;
   }
 }
 
-.rental-card {
+.shop-card {
   background: var(--surface-dark);
   border: 1.5px solid rgba(139, 148, 158, 0.25);
   border-radius: 20px;
@@ -1126,19 +1126,19 @@ body::after {
   transition: all 0.25s ease;
 }
 
-.rental-card:hover {
+.shop-card:hover {
   border-color: rgba(0, 255, 255, 0.4);
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
-.rental-card-header {
+.shop-card-header {
   display: flex;
   align-items: center;
   gap: 16px;
 }
 
-.rental-icon-wrap {
+.shop-icon-wrap {
   width: 56px;
   height: 56px;
   border-radius: 16px;
@@ -1147,29 +1147,29 @@ body::after {
   justify-content: center;
 }
 
-.rental-icon-wrap.cyan {
+.shop-icon-wrap.cyan {
   background: rgba(0, 255, 255, 0.12);
   border: 1.5px solid rgba(0, 255, 255, 0.4);
 }
 
-.rental-icon-wrap.purple {
+.shop-icon-wrap.purple {
   background: rgba(191, 0, 255, 0.12);
   border: 1.5px solid rgba(191, 0, 255, 0.4);
 }
 
-.rental-title {
+.shop-title {
   font-size: 1.25rem;
   font-weight: 800;
   color: #fff;
 }
 
-.rental-price-tag {
+.shop-price-tag {
   font-size: 0.9rem;
   color: var(--neon-cyan);
   font-weight: 700;
 }
 
-.rental-counter-row {
+.shop-counter-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1193,7 +1193,7 @@ body::after {
   text-align: center;
 }
 
-.rental-total-row {
+.shop-total-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1201,22 +1201,10 @@ body::after {
   font-weight: 800;
 }
 
-.rental-total-val {
+.shop-total-val {
   font-size: 1.4rem;
   font-weight: 900;
   color: var(--neon-cyan);
-}
-
-
-/* ========== MOBILE ADAPTATIONS ========== */
-@media (max-width: 480px) {
-  .logo-header {
-    padding: 12px 10px;
-  }
-  .logo-icon-wrapper {
-    width: 38px;
-    height: 38px;
-  }
   .logo-icon-wrapper svg {
     width: 22px !important;
     height: 22px !important;
@@ -1266,7 +1254,208 @@ body::after {
   .page-content {
     padding: 10px;
   }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Operator Badge in Header */
+.operator-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0, 255, 255, 0.1);
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--neon-cyan);
+}
+
+@media (max-width: 767px) {
+  .operator-badge span {
+    max-width: 80px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+/* ========== RENTAL SECTION ========== */
+
+.shop-grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 16px;
+}
+
+@media (min-width: 768px) {
+  .shop-grid {
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+  }
+}
+
+.shop-card {
+  background: var(--surface-dark);
+  border: 1.5px solid rgba(139, 148, 158, 0.25);
+  border-radius: 20px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: all 0.25s ease;
+}
+
+.shop-card:hover {
+  border-color: rgba(0, 255, 255, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.shop-card-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.shop-icon-wrap {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.shop-icon-wrap.cyan {
+  background: rgba(0, 255, 255, 0.12);
+  border: 1.5px solid rgba(0, 255, 255, 0.4);
+}
+
+.shop-icon-wrap.purple {
+  background: rgba(191, 0, 255, 0.12);
+  border: 1.5px solid rgba(191, 0, 255, 0.4);
+}
+
+.shop-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.shop-price-tag {
+  font-size: 0.9rem;
+  color: var(--neon-cyan);
+  font-weight: 700;
+}
+
+.shop-counter-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.counter-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.counter-val {
+  font-size: 1.3rem;
+  font-weight: 900;
+  min-width: 24px;
+  text-align: center;
+}
+
+.shop-total-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.shop-total-val {
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: var(--neon-cyan);
+}
+
+
+/* ========== MOBILE ADAPTATIONS ========== */
+@media (max-width: 480px) {
+  .logo-header {
+    padding: 38px 10px 12px 10px;
+  }
+  .logo-icon-wrapper {
+    width: 38px;
+    height: 38px;
+  }
+  .logo-icon-wrapper svg {
+    width: 22px !important;
+    height: 22px !important;
+  }
+  .logo-brand-name {
+    font-size: 1.15rem;
+    letter-spacing: 1px;
+  }
+  .logo-brand-sub {
+    font-size: 0.6rem;
+    letter-spacing: 2px;
+  }
+  .header-actions {
+    gap: 6px;
+  }
+  .action-btn {
+    padding: 6px 8px;
+    font-size: 0.75rem;
+  }
+  .operator-badge {
+    padding: 6px 8px;
+    font-size: 0.75rem;
+  }
+  .operator-badge span {
+    max-width: 55px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .action-btn svg {
+    width: 16px !important;
+    height: 16px !important;
+  }
+  .time-remaining {
+    font-size: 1.1rem;
+  }
+  .cost-tag {
+    font-size: 1.1rem;
+  }
+  .console-title {
+    font-size: 1.1rem;
+  }
+  .page-content {
+    padding: 10px;
+  }
   .consoles-grid {
     gap: 8px;
   }
+}
+
+/* Mobile Analytics Tabs */
+.mobile-analytics-tabs { display: none; }
+.mobile-analytics-tabs::-webkit-scrollbar { display: none; }
+@media (max-width: 768px) {
+  .mobile-analytics-tabs { display: flex !important; margin-bottom: 16px; margin-top: 8px; }
+  .mobile-tab-0 .analytics-section-charts, .mobile-tab-0 .analytics-section-top { display: none !important; }
+  .mobile-tab-1 .analytics-section-kpi, .mobile-tab-1 .analytics-section-top { display: none !important; }
+  .mobile-tab-2 .analytics-section-kpi, .mobile-tab-2 .analytics-section-charts { display: none !important; }
 }
