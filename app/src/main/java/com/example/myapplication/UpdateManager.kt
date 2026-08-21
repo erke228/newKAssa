@@ -11,9 +11,10 @@ import java.net.URL
 class UpdateManager(private val context: Context) {
     private val TAG = "UpdateManager"
     
-    // TODO: Замените на ваш реальный URL репозитория
-    private val GITHUB_RAW_URL = "https://raw.githubusercontent.com/vitsa-club/vitsa-app/main"
-    private val VERSION_URL = "$GITHUB_RAW_URL/version.json"
+    // URL вашего репозитория для OTA обновлений
+    private val GITHUB_BASE_URL = "https://raw.githubusercontent.com/erke228/newKAssa/main"
+    private val GITHUB_RAW_URL = "$GITHUB_BASE_URL/web"
+    private val VERSION_URL = "$GITHUB_BASE_URL/version.json"
     
     private val PREFS_NAME = "vitsa_ota_prefs"
     private val KEY_VERSION = "current_version"
