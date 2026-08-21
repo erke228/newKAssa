@@ -35,7 +35,7 @@ class ClubViewModel(application: Application) : AndroidViewModel(application) {
 
     // --- НАСТРОЙКИ SUPABASE ---
     private val SUPABASE_URL = "https://htkoyibefvqvaisbolga.supabase.co"
-    private val SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh0a295aWJlZnZxdmFpc2JvbGdhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU4NzQzNjMsImV4cCI6MjEwMTQ1MDM2M30._ETmzJgURtwBpv5anL760wURMpTt_oPSDeR49mE67-Q"
+    private val SUPABASE_KEY = "sb_publishable_m0hy1ji5NvVqxDjvQ5Tovg_7K7JHZ_V"
 
     private val client = createSupabaseClient(SUPABASE_URL, SUPABASE_KEY) {
         install(Postgrest)
